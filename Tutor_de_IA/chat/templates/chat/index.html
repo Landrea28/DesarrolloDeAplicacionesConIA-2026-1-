@@ -1,0 +1,109 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Tutor de Desarrollo Web</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f4f7f6;
+            margin: 0;
+            padding: 20px;
+            display: flex;
+            justify-content: center;
+        }
+        .chat-container {
+            width: 100%;
+            max-width: 600px;
+            background: white;
+            border-radius: 10px;
+            box-shadow: 0 0 15px rgba(0,0,0,0.1);
+            overflow: hidden;
+            display: flex;
+            flex-direction: column;
+            height: 80vh;
+        }
+        .header {
+            background-color: #007bff;
+            color: white;
+            padding: 15px;
+            text-align: center;
+            font-size: 1.2em;
+            font-weight: bold;
+        }
+        .chat-box {
+            flex: 1;
+            padding: 15px;
+            overflow-y: auto;
+            border-bottom: 1px solid #ddd;
+        }
+        .message {
+            margin-bottom: 15px;
+            padding: 10px 15px;
+            border-radius: 8px;
+            max-width: 80%;
+            word-wrap: break-word;
+        }
+        .user {
+            background-color: #e3f2fd;
+            align-self: flex-end;
+            margin-left: auto;
+            border-bottom-right-radius: 0;
+        }
+        .bot {
+            background-color: #f1f1f1;
+            align-self: flex-start;
+            margin-right: auto;
+            border-bottom-left-radius: 0;
+        }
+        .input-area {
+            display: flex;
+            padding: 15px;
+            background: #fff;
+        }
+        input[type="text"] {
+            flex: 1;
+            padding: 10px;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+            outline: none;
+        }
+        button {
+            background-color: #007bff;
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            margin-left: 10px;
+            border-radius: 5px;
+            cursor: pointer;
+        }
+        button:hover {
+            background-color: #0056b3;
+        }
+    </style>
+</head>
+<body>
+
+    <div class="chat-container">
+        <div class="header">🤖 Tutor de Desarrollo Web</div>
+        
+        <div class="chat-box" id="chat-box">
+            <!-- Si hay respuesta del bot, se muestra aquí -->
+            {% if respuesta %}
+                <div class="message user"><strong>Tú:</strong> {{ pregunta }}</div>
+                <div class="message bot"><strong>Tutor:</strong> {{ respuesta }}</div>
+            {% else %}
+                <div class="message bot">¡Hola! Soy tu tutor de desarrollo web. ¿En qué te puedo ayudar a pensar hoy?</div>
+            {% endif %}
+        </div>
+
+        <form class="input-area" method="POST">
+            {% csrf_token %}
+            <input type="text" name="pregunta" placeholder="Escribe tu duda aquí..." required autocomplete="off">
+            <button type="submit">Enviar</button>
+        </form>
+    </div>
+
+</body>
+</html>
