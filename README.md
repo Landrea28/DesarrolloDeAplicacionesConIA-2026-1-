@@ -46,7 +46,7 @@ desarrollo-ia/
 ├── Gestión_de_Roles_y_System_Instructions/
 ├── Prompt_Engineering/
 ├── Tutor_de_IA /
-├── Proyecto/
+├── ProyectoFinal/
 └── README.md
 
 
