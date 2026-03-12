@@ -1,6 +1,7 @@
 CREACION: martes, 3 de marzo de 2026, 20:38
 
 # 🪸 RECUERDE QUE ESTA EN LA RAMA: Tutor_de_IA
+## Rama "main": https://github.com/Landrea28/DesarrolloDeAplicacionesConIA-2026-1-/tree/main?tab=readme-ov-file
 
 # Tutor Socrático de Desarrollo Web con IA 🤖🌐
 
@@ -72,4 +73,3 @@ Abre tu navegador web favorito y dirígete a la siguiente dirección:
 
 ---
 **Desarrollado para la clase de Desarrollo de Aplicaciones con IA.**
-
