@@ -1,6 +1,6 @@
 CREACION: martes, 17 de febrero de 2026, 20:30
 
-# 🪸 RECUERDE QUE ESTA EN LA RAMA: Tutor_de_IA
+# 🪸 RECUERDE QUE ESTA EN LA RAMA: Gestion_de_Roles_y_System_Instructions
 ## Rama "main": https://github.com/Landrea28/DesarrolloDeAplicacionesConIA-2026-1-/tree/main?tab=readme-ov-file
 
 # Taller Práctico 2 - Desarrollo de Aplicaciones con IA
