@@ -1,3 +1,8 @@
+CREACION: martes, 17 de febrero de 2026, 20:30
+
+# 🪸 RECUERDE QUE ESTA EN LA RAMA: Tutor_de_IA
+## Rama "main": https://github.com/Landrea28/DesarrolloDeAplicacionesConIA-2026-1-/tree/main?tab=readme-ov-file
+
 # Taller Práctico 2 - Desarrollo de Aplicaciones con IA
 
 Este repositorio contiene la solución al Taller Práctico 2 de la asignatura "Desarrollo de aplicaciones con IA". El proyecto demuestra el uso de la API de Google GenAI para diferentes tareas, como generación de texto simple, roles específicos (editor editorial) y un chatbot con contexto (vendedor de tecnología).
