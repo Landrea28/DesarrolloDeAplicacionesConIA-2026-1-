@@ -1,103 +1,89 @@
-CREACION: 12 DE MARZO, 2026 14:20
+CREACION: martes, 24 de febrero de 2026, 21:07
 
-# 🪸 Resumen de talleres, proyectos y cada rama
-1. Conexión_a_la_API (Taller 1)  🔗 https://github.com/Landrea28/DesarrolloDeAplicacionesConIA-2026-1-/tree/Conexi%C3%B3n_a_la_API
-2. Gestion_de_Roles_y_System_Instructions (Taller 2) 🔗 https://github.com/Landrea28/DesarrolloDeAplicacionesConIA-2026-1-/tree/Gesti%C3%B3n_de_Roles_y_System_Instructions
-3. Prompt_Engineering (Taller 3) 🔗 https://github.com/Landrea28/DesarrolloDeAplicacionesConIA-2026-1-/tree/Prompt_Engineering
-4. Tutor_de_IA (Taller 4) 🔗 https://github.com/Landrea28/DesarrolloDeAplicacionesConIA-2026-1-/tree/Tutor_de_IA
-5. ProyectoFinal ("Avance 1", FECHA: 12/03/2026) 🔗 https://github.com/Landrea28/DesarrolloDeAplicacionesConIA-2026-1-/tree/ProyectoFinal
+# 🪸 RECUERDE QUE ESTA EN LA RAMA: Prompt_Engineering
+## Rama "main": https://github.com/Landrea28/DesarrolloDeAplicacionesConIA-2026-1-/tree/main?tab=readme-ov-file
 
-# 🤖 Desarrollo de Aplicaciones con IA
+# Prompt Engineering con Google Gemini
 
-Repositorio creado para presentar los trabajos de la materia  
-**Desarrollo de Aplicaciones con Inteligencia Artificial**
+Ejemplos de técnicas de Prompt Engineering usando la API de Google Gemini (google-genai) en Python.
 
-⚠️ IMPORTANTE  
-El repositorio está organizado por **ramas (branches)**.  
-Cada taller se encuentra en una rama diferente.  
-La rama `main` solo contiene este README con las instrucciones.
+## Archivos
 
----
-
-## 📌 Cómo revisar los trabajos
-
-Para ver cada taller, haga clic en el enlace correspondiente.  
-Cada enlace lo llevará directamente a la rama donde está el trabajo.
+| Archivo | Descripción |
+|---|---|
+| `Few_Shot.py` | Clasificador de sentimientos usando ejemplos few-shot |
+| `Estructura.py` | Generación de respuestas con estructura definida |
+| `Evaluador.py` | Evaluación de respuestas con criterios específicos |
+| `Condicional.py` | Prompts con lógica condicional |
 
 ---
 
-## 📂 Estructura del repositorio
+## Requisitos previos
 
-- main → contiene README con instrucciones
-- Cada taller → ramas independientes
-- Proyecto final → rama independiente
-
----
-
-## 👩‍💻 Autor
-
-Lina Andrea Bello Ballen
-Estudiante de Ingeniería de Sistemas  
-Materia: Desarrollo de Aplicaciones con IA  
-Año: 2026
+- Python 3.10 o superior
+- Una API Key de Google Gemini → [Obtenerla aquí](https://aistudio.google.com/app/apikey)
 
 ---
 
-# TALLERES Y PROYECTOS
-## 🔹 Taller 1 — Conexión a la API
+## Instalación
 
-Nombre de la rama:
+### 1. Clonar el repositorio
 
-    🪸Conexión_a_la_API (Taller 1)
+```bash
+git clone <URL_DEL_REPOSITORIO>
+cd Prompt_Engineering
+```
 
-Abrir aquí:
+### 2. Crear y activar el entorno virtual
 
-👉 https://github.com/Landrea28/DesarrolloDeAplicacionesConIA-2026-1-/tree/Conexi%C3%B3n_a_la_API
+```bash
+# Crear el entorno virtual
+python -m venv env
 
----
+# Activar en Windows (CMD)
+env\Scripts\activate.bat
 
-## 🔹 Taller 2 — Gestión de roles y system instructions
+# Activar en Windows (PowerShell)
+env\Scripts\Activate.ps1
 
-Nombre de la rama:
+# Activar en Linux/Mac
+source env/bin/activate
+```
 
-    🪸Gestion_de_Roles_y_System_Instructions (Taller 2)
+### 3. Instalar las dependencias
 
-Abrir aquí:
+```bash
+pip install -r requeriments.txt
+```
 
-👉 https://github.com/Landrea28/DesarrolloDeAplicacionesConIA-2026-1-/tree/Gesti%C3%B3n_de_Roles_y_System_Instructions
+### 4. Configurar la API Key
 
----
+Crear un archivo `.env` en la carpeta `Prompt_Engineering/` con el siguiente contenido:
 
-## 🔹 Taller 3 — Prompt Engineering
+```
+GENAI_API_KEY=tu_api_key_aqui
+```
 
-Nombre de la rama:
-
-    🪸Prompt_Engineering (Taller 3)
-
-Abrir aquí:
-
-👉 https://github.com/Landrea28/DesarrolloDeAplicacionesConIA-2026-1-/tree/Prompt_Engineering
-
----
-
-## 🔹 Taller 4 — Tutor de IA
-
-Nombre de la rama:
-
-    🪸Tutor_de_IA (Taller 4)
-
-Abrir aquí:
-
-👉 https://github.com/Landrea28/DesarrolloDeAplicacionesConIA-2026-1-/tree/Tutor_de_IA
+> **Importante:** El archivo `.env` no se sube al repositorio (está en `.gitignore`). Cada persona debe crear el suyo propio.
 
 ---
 
-## 🔹 Proyecto Final
+## Ejecución
 
-Nombre de la rama:
+Con el entorno virtual activado, ejecutar cualquiera de los scripts:
 
-    🪸ProyectoFinal ("Avance 1", FECHA: 12/03/2026)
+```bash
+python Few_Shot.py
+python Estructura.py
+python Evaluador.py
+python Condicional.py
+```
 
-Abrir aquí:
+---
 
-👉 https://github.com/Landrea28/DesarrolloDeAplicacionesConIA-2026-1-/tree/ProyectoFinal
+## Solución de problemas
+
+- **Error `ModuleNotFoundError`**: Asegúrate de haber activado el entorno virtual antes de correr el script.
+- **Error de API Key**: Verifica que el archivo `.env` existe y que la variable se llama exactamente `GENAI_API_KEY`.
+- **PowerShell no permite ejecutar scripts**: Ejecuta `Set-ExecutionPolicy -Scope CurrentUser RemoteSigned` y luego activa el entorno virtual de nuevo.
+
