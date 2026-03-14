@@ -78,5 +78,4 @@ La terminal mostrará el saludo inicial, conectará con la API y devolverá una 
 
 ## 📸 Evidencia de Ejecución
 
-![Captura de pantalla de la terminal mostrando la respuesta de Gemini](./img/demo_resultado.png)
-*(Nota: La imagen esta en la carpeta 'img' del repositorio)*
+![Resultado](https://github.com/Landrea28/DesarrolloDeAplicacionesConIA-2026-1-/blob/Conexion_a_la_API/img/Output.png)
