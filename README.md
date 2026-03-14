@@ -1,4 +1,4 @@
-## 🪸 RECUERDE QUE ESTA EN LA RAMA: Conexion_a_la_API
+## 🪸 RECUERDE QUE ESTA EN LA RAMA: ProyectoFinal
 Rama "main": https://github.com/Landrea28/DesarrolloDeAplicacionesConIA-2026-1-/tree/main?tab=readme-ov-file
 
 CREACION: sabado, 14 de marzo de 2026, 11:44
@@ -17,6 +17,14 @@ Su comportamiento principal es:
 3. Entregar una respuesta util y concreta en JSON valido.
 
 La logica del asistente esta definida en [_init_.py](_init_.py), usando un prompt de sistema con reglas y ejemplos de salida.
+
+## 🖼️ Seccion visual 
+
+![Resultado](https://github.com/Landrea28/DesarrolloDeAplicacionesConIA-2026-1-/blob/ProyectoFinal/IMAGEN/imagenSalida.png)
+
+- Ejecucion del asistente
+- Clasificacion de una consulta
+- Caso con `requiere_aclaracion`
 
 ## 📁 Estructura actual del proyecto
 
@@ -126,14 +134,6 @@ El asistente responde en JSON con esta estructura:
 	"respuesta": "..."
 }
 ```
-
-## 🖼️ Seccion visual (espacio para evidencias)
-
-
-
-- Ejecucion del asistente
-- Clasificacion de una consulta
-- Caso con `requiere_aclaracion`
 
 ## 📌 Notas importantes
 
