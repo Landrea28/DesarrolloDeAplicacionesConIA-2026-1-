@@ -1,8 +1,8 @@
 CREACION: 12 DE MARZO, 2026 14:20
 
 # 🪸 Resumen de talleres, proyectos y cada rama
-1. Conexión_a_la_API (Taller 1)  🔗 https://github.com/Landrea28/DesarrolloDeAplicacionesConIA-2026-1-/tree/Conexi%C3%B3n_a_la_API
-2. Gestion_de_Roles_y_System_Instructions (Taller 2) 🔗 https://github.com/Landrea28/DesarrolloDeAplicacionesConIA-2026-1-/tree/Gesti%C3%B3n_de_Roles_y_System_Instructions
+1. Conexión_a_la_API (Taller 1)  🔗 https://github.com/Landrea28/DesarrolloDeAplicacionesConIA-2026-1-/tree/Conexion_a_la_API
+2. Gestion_de_Roles_y_System_Instructions (Taller 2) 🔗 https://github.com/Landrea28/DesarrolloDeAplicacionesConIA-2026-1-/tree/Gestion_de_Roles_y_System_Instructions
 3. Prompt_Engineering (Taller 3) 🔗 https://github.com/Landrea28/DesarrolloDeAplicacionesConIA-2026-1-/tree/Prompt_Engineering
 4. Tutor_de_IA (Taller 4) 🔗 https://github.com/Landrea28/DesarrolloDeAplicacionesConIA-2026-1-/tree/Tutor_de_IA
 5. ProyectoFinal ("Avance 1", FECHA: 12/03/2026) 🔗 https://github.com/Landrea28/DesarrolloDeAplicacionesConIA-2026-1-/tree/ProyectoFinal
