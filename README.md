@@ -1,7 +1,7 @@
 CREACION: martes, 10 de febrero de 2026, 20:30
 
 # 🪸 RECUERDE QUE ESTA EN LA RAMA: Conexion_a_la_API
-## Rama "main": https://github.com/Landrea28/DesarrolloDeAplicacionesConIA-2026-1-/tree/Conexion_a_la_API
+## Rama "main": https://github.com/Landrea28/DesarrolloDeAplicacionesConIA-2026-1-/tree/main
 
 # Integración Básica con Gemini API
 
