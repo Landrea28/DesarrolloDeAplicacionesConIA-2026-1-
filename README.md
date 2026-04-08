@@ -1,8 +1,9 @@
-# Buscador de Artículos con TF-IDF
+# # 🪸 RECUERDE QUE ESTA EN LA RAMA: Buscador de Artículos con TF-IDF
+## Rama "main": https://github.com/Landrea28/DesarrolloDeAplicacionesConIA-2026-1-/tree/main?tab=readme-ov-file 
 
 Este proyecto implementa un motor de búsqueda básico en Python utilizando el algoritmo **TF-IDF (Term Frequency - Inverse Document Frequency)**. Su propósito es encontrar los artículos o reglamentos académicos más relevantes dentro de una colección de documentos, basándose en una consulta de texto proporcionada por el usuario.
 
-## Descripción del Proyecto
+## Descripción del Proyecto ✨
 
 El script `# tf-idf.py` contiene una lista de documentos (artículos de un reglamento universitario) y una consulta predefinida. El algoritmo calcula la relevancia de cada documento para la consulta dada siguiendo estos pasos:
 
@@ -10,7 +11,7 @@ El script `# tf-idf.py` contiene una lista de documentos (artículos de un regla
 2. **IDF (Frecuencia Inversa de Documento):** Mide la importancia de la palabra en el conjunto total de documentos. Las palabras comunes en todos los documentos reciben un peso menor, mientras que las raras obtienen un peso mayor.
 3. **Score Final:** Multiplica TF por IDF para cada palabra y suma los resultados para obtener la puntuación total del documento.
 
-## Requisitos Previos
+## Requisitos Previos 🛠️
 
 Para ejecutar este proyecto, necesitas tener instalado Python y la biblioteca `numpy` (utilizada para calcular el logaritmo natural en la fórmula del IDF).
 
@@ -20,7 +21,7 @@ Puedes instalar la dependencia ejecutando:
 pip install numpy
 ```
 
-## Instrucciones de Ejecución
+## Instrucciones de Ejecución 👩‍🏫
 
 1. Abre una terminal o línea de comandos.
 2. Navega hasta el directorio donde se encuentra el archivo `# tf-idf.py`.
@@ -30,7 +31,7 @@ pip install numpy
 python tf_idf.py
 ```
 
-## Explicación del Código
+## Explicación del Código ⚡
 
 Dentro del script, puedes modificar la variable `consulta` para realizar diferentes búsquedas. Por ejemplo:
 
@@ -43,7 +44,7 @@ consulta = "perfil de ingreso y criterios del Ministerio de Educación"
 
 El programa limpiará los signos de puntuación, dividirá la consulta en palabras y calculará los puntajes mostrando los documentos ordenados de mayor a menor relevancia.
 
-## Ejemplos de Ejecución
+## Ejemplos de Ejecución 🪄
 
 Al ejecutar el script con la consulta `"perfil de ingreso y criterios del Ministerio de Educación"`, la salida en consola será similar a esta:
 
@@ -53,12 +54,12 @@ Al ejecutar el script con la consulta `"perfil de ingreso y criterios del Minist
 ...
 ```
 
-### Imágenes de Prueba
+### Imágenes de Prueba 🖨️
 
 *(A continuación se muestran ejemplos visuales de la ejecución del script. Puedes reemplazar la ruta de las imágenes con tus capturas reales).*
 
-**Ejemplo de Terminal ejecutando el Script:**
-![Ejecución del script en terminal](ejemplo_terminal.png)
+![Consulta 1](https://github.com/Landrea28/DesarrolloDeAplicacionesConIA-2026-1-/blob/TF-IDF/IMAGENES/Consulta1.png)
 
-**Ejemplo del Código y las Consultas:**
-![Modificando la consulta en el código](ejemplo_codigo.png)
+![Consulta 2](https://github.com/Landrea28/DesarrolloDeAplicacionesConIA-2026-1-/blob/TF-IDF/IMAGENES/Consulta2.png)
+
+![Consulta 3](https://github.com/Landrea28/DesarrolloDeAplicacionesConIA-2026-1-/blob/TF-IDF/IMAGENES/Consulta3.png)
