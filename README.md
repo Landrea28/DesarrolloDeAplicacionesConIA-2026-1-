@@ -56,10 +56,11 @@ Al ejecutar el script con la consulta `"perfil de ingreso y criterios del Minist
 
 ### Imágenes de Prueba 🖨️
 
-*(A continuación se muestran ejemplos visuales de la ejecución del script. Puedes reemplazar la ruta de las imágenes con tus capturas reales).*
-
+#### Consulta 1
 ![Consulta 1](https://github.com/Landrea28/DesarrolloDeAplicacionesConIA-2026-1-/blob/TF-IDF/IMAGENES/Consulta1.png)
 
+#### Consulta 2
 ![Consulta 2](https://github.com/Landrea28/DesarrolloDeAplicacionesConIA-2026-1-/blob/TF-IDF/IMAGENES/Consulta2.png)
 
+#### Consulta 3
 ![Consulta 3](https://github.com/Landrea28/DesarrolloDeAplicacionesConIA-2026-1-/blob/TF-IDF/IMAGENES/Consulta3.png)
