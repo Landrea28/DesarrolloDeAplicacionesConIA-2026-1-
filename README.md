@@ -1,4 +1,4 @@
-# # 🪸 RECUERDE QUE ESTA EN LA RAMA: Buscador de Artículos con TF-IDF
+# # 🪸 RECUERDE QUE ESTA EN LA RAMA: TF-IDF
 ## Rama "main": https://github.com/Landrea28/DesarrolloDeAplicacionesConIA-2026-1-/tree/main?tab=readme-ov-file 
 
 Este proyecto implementa un motor de búsqueda básico en Python utilizando el algoritmo **TF-IDF (Term Frequency - Inverse Document Frequency)**. Su propósito es encontrar los artículos o reglamentos académicos más relevantes dentro de una colección de documentos, basándose en una consulta de texto proporcionada por el usuario.
