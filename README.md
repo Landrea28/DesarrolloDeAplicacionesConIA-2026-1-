@@ -64,4 +64,4 @@ CONSULTA: 'inteligencia' (Punto 1: TF-IDF > BM25 debido a 'Keyword Stuffing')
 ### Imágenes de Prueba 🖨️
 
 #### Consulta 
-![Consulta 1](https://github.com/Landrea28/DesarrolloDeAplicacionesConIA-2026-1-/blob/Tf-Idf_BM25/IMAGENES/Consulta.png)
+![Consulta 1](https://github.com/Landrea28/DesarrolloDeAplicacionesConIA-2026-1-/blob/Tf_Idf_BM25/IMAGENES/Consulta.png)
