@@ -1,127 +1,77 @@
 ## 🪸 RECUERDE QUE ESTA EN LA RAMA: ProyectoFinal
 Rama "main": https://github.com/Landrea28/DesarrolloDeAplicacionesConIA-2026-1-/tree/main?tab=readme-ov-file
 
-CREACION: sabado, 14 de marzo de 2026, 11:44
+CREACION 1: sabado, 14 de marzo de 2026, 11:44
+CREACION 2: sabado, 2 de mayo de 2026, 16:00
 
-# Proyecto 1 - Integracion con Gemini para Soporte Tecnico
+# Proyecto - Asistente RAG de Ciberseguridad (100% Local)
 
-Este proyecto corresponde al Proyecto 1 de la materia. Implementa un asistente de soporte tecnico en Python que usa Google Gemini para clasificar consultas y responder en formato JSON.
+Este proyecto desarrolla un asistente de ciberseguridad basado en la arquitectura RAG (Retrieval-Augmented Generation) operando completamente en local para preservar la privacidad de los datos.
 
-## 🤖 Explicacion del asistente que se crea en este proyecto
+## 🛠️ Explicación de la Arquitectura
 
-El asistente recibe consultas tecnicas por consola y mantiene contexto de conversacion con historial.
-Su comportamiento principal es:
+1. **Base de Conocimiento (FAISS)**: El sistema lee archivos `.pdf` y `.md` ubicados en la carpeta `docs/`, dividiéndolos en fragmentos e indexándolos mediante embeddings de HuggingFace (`all-MiniLM-L6-v2`) a una base de datos local rápida (FAISS).
+2. **Modelo LLM Local (Ollama)**: Reemplazamos Google Gemini por modelos de lenguaje Open Source (como Mistral o Llama 3) corriendo localmente mediante `Ollama`.
+3. **Respuesta Estructurada**: El LLM recibe el fragmento de la documentación más relevante, la historia del chat y la pregunta actual para generar una respuesta en formato estrictamente JSON.
 
-1. Clasificar el tema principal de la consulta (instalacion, configuracion, autenticacion, conectividad, etc.).
-2. Determinar el estado de la respuesta: `aceptado` o `requiere_aclaracion`.
-3. Entregar una respuesta util y concreta en JSON valido.
+## 📂 Estructura actual del proyecto
 
-La logica del asistente esta definida en [_init_.py](_init_.py), usando un prompt de sistema con reglas y ejemplos de salida.
+- `_init_.py`: script principal del asistente RAG y chat.
+- `ingest.py`: motor de indexación (convierte los documentos de `docs/` a vectores en `db/`).
+- `docs/`: carpeta donde se deben ubicar los manuales en PDF, Markdown o TXT.
+- `db/`: carpeta generada automáticamente con la base de datos vectorial FAISS.
+- `requirements.txt`: dependencias del proyecto.
+- `.env`: variables de entorno.
 
-## 🖼️ Seccion visual 
-
-![Resultado](https://github.com/Landrea28/DesarrolloDeAplicacionesConIA-2026-1-/blob/ProyectoFinal/IMAGEN/imagenSalida.png)
-
-- Ejecucion del asistente
-- Clasificacion de una consulta
-- Caso con `requiere_aclaracion`
-
-## 📁 Estructura actual del proyecto
-
-- [_init_.py](_init_.py): script principal del asistente.
-- [requeriments.txt](requeriments.txt): dependencias del proyecto.
-- [.env](.env): variables de entorno (no compartir en publico).
-- [README.md](README.md): documentacion.
-
-## 📦 Librerias instaladas (verificadas)
-
-Se revisaron las librerias instaladas en el entorno virtual del proyecto y coinciden con el enfoque actual (Gemini por consola, sin Django). Principales paquetes:
-
-- `google-genai`
-- `python-dotenv`
-- `requests`
-- `httpx`
-- `pydantic`
-- `tenacity`
-
-Tambien hay dependencias de soporte/transitivas como `anyio`, `websockets`, `cryptography`, entre otras.
-
-## 🛠️ Tecnologias utilizadas
+## 🚀 Tecnologías utilizadas
 
 - Python
-- Google GenAI (modelo `gemini-2.5-flash`)
-- python-dotenv
-- JSON para salida estructurada
+- Ollama (Modelos Open Source locales como `mistral` o `llama3`)
+- LangChain (Orquestación RAG y partición de texto)
+- FAISS (Vector Database local por Meta)
+- HuggingFace Embeddings (Modelos ligeros locales de vectorización)
 
-## 🚀 Instrucciones de instalacion y ejecucion
+## 🔧 Instrucciones de instalación y ejecución
 
-### 🧭 Flujo recomendado (resumido)
-
-#### 1) 💻 Abrir terminal en VS Code
-
-- Atajo usado en clase: `Ctrl + ñ`
-
-#### 2) 🧪 Crear y activar entorno virtual
+### 1) Crear y activar entorno virtual
 
 Crear entorno:
-
 ```bash
 python -m venv env
 ```
-
-Windows:
-
+Activar (Windows):
 ```bash
 .\env\Scripts\Activate
 ```
 
-macOS/Linux:
-
+### 2) Instalar librerías
 ```bash
-source env/bin/activate
+pip install -r requirements.txt
 ```
 
-#### 3) 🧠 Seleccionar interprete en VS Code
-
-1. Presionar `Ctrl + Shift + P`.
-2. Buscar `Python: Select Interpreter`.
-3. Elegir el interprete del entorno virtual, por ejemplo `./env/Scripts/python.exe`.
-4. Referencia usada en clase: Python 3.13.12 (Microsoft Store).
-
-#### 4) 📦 Instalar librerias (elige una opcion)
-
-Opcion A - Instalacion manual:
-
+### 3) Instalar y Configurar Ollama
+1. Descarga e instala [Ollama](https://ollama.com/). 
+	O puedes usar un comando...
+		En Windows: irm https://ollama.com/install.ps1 | iex
+		En Linux y En macOS: curl -fsSL https://ollama.com/install.sh | sh
+2. Abre una terminal normal en tu equipo y descarga el modelo base ejecutando:
 ```bash
-python.exe -m pip install --upgrade pip
-pip install requests
-pip install google-genai
-pip install python-dotenv
+ollama run mistral
 ```
+*(Puedes salir de esa terminal luego o dejarla corriendo de fondo).*
 
-Opcion B - Instalar todo desde archivo:
-
+### 4) Ingesta de Documentos (Fase 2)
+Coloca todos los manuales, leyes o guías en la carpeta `docs/`. Luego ejecuta:
 ```bash
-pip install -r requeriments.txt
+python ingest.py
 ```
+Esto leerá los documentos y creará la base de datos vectorial en `db/`.
 
-#### 5) 🔐 Configurar credenciales
-
-En el archivo `.env`, definir:
-
-```env
-GENAI_API_KEY=TU_API_KEY_AQUI
-```
-
-Nota: en este proyecto la variable usada por el codigo es `GENAI_API_KEY`.
-
-#### 6) ▶️ Ejecutar el asistente
-
+### 5) Ejecutar el asistente (Fase 3)
 ```bash
 python _init_.py
 ```
-
-Para salir del programa, escribir `salir`.
+El asistente leerá el historial, recuperará el contexto de la base de datos y le pedirá a Ollama una respuesta estructurada en formato JSON.
 
 ## 🧾 Formato de salida esperado
 
