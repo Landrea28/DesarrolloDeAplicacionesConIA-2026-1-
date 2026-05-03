@@ -1,0 +1,9 @@
+langchain==0.2.14
+langchain-community==0.2.12
+langchain-huggingface==0.0.3
+faiss-cpu
+pypdf==4.3.1
+ollama
+numpy
+python-dotenv
+requests

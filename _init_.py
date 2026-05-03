@@ -1,18 +1,18 @@
 import os
 import json
+import ollama
 from dotenv import load_dotenv
-from google import genai
+from langchain_community.vectorstores import FAISS
+from langchain_huggingface import HuggingFaceEmbeddings
 
 load_dotenv()  # Load environment variables from .env file
 
-API_KEY = os.getenv("GENAI_API_KEY")
-
-# Inicializar el cliente con la API Key
-client = genai.Client(api_key=API_KEY)
+DB_DIR = "db"
+OLLAMA_MODEL = "mistral" # Puedes cambiar esto por "llama3" u otro que tengas instalado en ollama
 
 SYSTEM_PROMPT = """
 [task]
-Eres un Analista de Soporte Tecnico. Tu objetivo es clasificar y responder de forma util,
+Eres un Analista de Ciberseguridad. Tu objetivo es clasificar y responder de forma util basandote estrictamente en la documentacion proporcionada,
 sin inventar informacion y sin asumir archivos adjuntos.
 [/task]
 
@@ -20,7 +20,7 @@ sin inventar informacion y sin asumir archivos adjuntos.
 Responde UNICAMENTE en JSON valido, sin markdown, sin texto extra y sin explicaciones.
 Usa exactamente este esquema:
 {
-  "tema_principal": respuesta clara y concisa sobre el tema principal del problema tecnico,
+  "tema_principal": respuesta clara y concisa sobre el tema principal del problema tecnico o de ciberseguridad,
   "estado": "aceptado" o "requiere_aclaracion",
   "respuesta": "texto"
 }
@@ -37,35 +37,39 @@ Catalogo de tema_principal:
 7=integraciones
 8=seguridad
 9=respaldo_recuperacion
-10=otro
+10=malware
+11=phishing
+12=vulnerabilidades
+13=otro
 [/topic]
 
 [requirements/constraints]
 1. Usa el historial dentro de <<<HISTORIAL>>> y <<<FIN_HISTORIAL>>> para mantener continuidad.
 2. Lee la consulta actual entre <<<CONSULTA_USUARIO>>> y <<<FIN_CONSULTA>>>.
-3. Responde segun el contexto acumulado de la conversacion.
-4. Si el usuario responde tus preguntas, continua desde ahi sin reiniciar el caso.
-2. Si hay contexto tecnico suficiente, usa estado="aceptado" y entrega una respuesta practica.
-3. Si falta contexto critico, usa estado="requiere_aclaracion" y escribe preguntas concretas en "respuesta".
-4. tema_principal siempre debe ser correspondiente a los temas y problemas escritos, debe ser claro y no en numeros.
-5. Si requiere aclaracion y no hay suficiente contexto, usa tema_principal=10.
-6. No agregues campos adicionales.
+3. IMPORTANTE: Basa tu respuesta PRINCIPALMENTE en la informacion dentro de <<<DOCUMENTACION_RELEVANTE>>> y <<<FIN_DOCUMENTACION>>>. Si la respuesta no esta alli, indicalo o pide aclaracion.
+4. Responde segun el contexto acumulado de la conversacion.
+5. Si el usuario responde tus preguntas, continua desde ahi sin reiniciar el caso.
+6. Si hay contexto tecnico suficiente, usa estado="aceptado" y entrega una respuesta practica.
+7. Si falta contexto critico, usa estado="requiere_aclaracion" y escribe preguntas concretas en "respuesta".
+8. tema_principal siempre debe ser correspondiente a los temas y problemas escritos, debe ser claro y no en numeros.
+9. Si requiere aclaracion y no hay suficiente contexto, usa tema_principal=13.
+10. No agregues campos adicionales.
 [/requirements/constraints]
 
 [few_shot]
-Entrada: "Instale el agente, pero al abrirlo aparece missing runtime y se cierra"
-Salida esperada: tema_principal= instalacion, estado=aceptado, respuesta con pasos de validacion de runtime.
+Entrada: "He notado actividad inusual en el puerto 443"
+Salida esperada: tema_principal= vulnerabilidades, estado=aceptado, respuesta con pasos de mitigacion de la documentacion.
 
-Entrada: "No me deja iniciar sesion en la intranet"
+Entrada: "No me deja iniciar sesion en la VPN"
 Salida esperada: tema_principal= autenticacion, estado=aceptado, respuesta con pasos de credenciales y bloqueo.
 
 Entrada: "Me ayudas?"
-Salida esperada: tema_principal= otro, estado=requiere_aclaracion, respuesta con preguntas puntuales.
+Salida esperada: tema_principal= otro, estado=requiere_aclaracion, respuesta con preguntas puntuales sobre el incidente.
 [/few_shot]
 """.strip()
 
 
-def build_prompt(history: list[dict[str, str]], user_text: str) -> str:
+def build_prompt(history: list[dict[str, str]], user_text: str, context: str) -> str:
   history_lines = []
   for item in history:
     role = item.get("role", "desconocido").upper()
@@ -76,6 +80,9 @@ def build_prompt(history: list[dict[str, str]], user_text: str) -> str:
 
   return (
     f"{SYSTEM_PROMPT}\n\n"
+    "<<<DOCUMENTACION_RELEVANTE>>>\n"
+    f"{context}\n"
+    "<<<FIN_DOCUMENTACION>>>\n\n"
     "<<<HISTORIAL>>>\n"
     f"{history_text}\n"
     "<<<FIN_HISTORIAL>>>\n\n"
@@ -88,15 +95,13 @@ def build_prompt(history: list[dict[str, str]], user_text: str) -> str:
 
 
 def generate_support_response(prompt: str) -> str:
-  response = client.models.generate_content(
-    model="gemini-2.5-flash",
-    contents=prompt,
-  )
-
-  if not response.text:
-    return '{"tema_principal": otro, "estado": "requiere_aclaracion", "respuesta": "No pude generar respuesta. Intenta nuevamente con mas detalle tecnico."}'
-
-  return response.text.strip()
+  try:
+    response = ollama.generate(model=OLLAMA_MODEL, prompt=prompt, format='json')
+    return response['response'].strip()
+  except Exception as e:
+    print(f"Error comunicandose con Ollama: {e}")
+    print("Asegurate de que Ollama esta corriendo (ollama run mistral)")
+    return '{"tema_principal": "otro", "estado": "requiere_aclaracion", "respuesta": "Error de conexion con modelo local."}'
 
 
 def format_output_for_console(raw_text: str) -> str:
@@ -106,13 +111,23 @@ def format_output_for_console(raw_text: str) -> str:
   except json.JSONDecodeError:
     return raw_text
 
+def get_vector_store():
+  if not os.path.exists(DB_DIR):
+    print("No se encontro la base de datos vectorial. Ejecuta 'python ingest.py' primero.")
+    return None
+  print("Cargando base de datos vectorial local...")
+  embeddings = HuggingFaceEmbeddings(model_name="all-MiniLM-L6-v2")
+  vector_store = FAISS.load_local(DB_DIR, embeddings, allow_dangerous_deserialization=True)
+  return vector_store
+
 
 def main() -> None:
-  if not API_KEY:
-    print("No se encontro GENAI_API_KEY. Configurala en el archivo .env")
+  print("Iniciando componentes...")
+  vector_store = get_vector_store()
+  if not vector_store:
     return
 
-  print("Asistente de soporte tecnico iniciado.")
+  print(f"Asistente RAG de Ciberseguridad (Local con {OLLAMA_MODEL}) iniciado.")
   print("Escribe tu consulta. Cuando quieras terminar, escribe 'salir'.")
 
   history: list[dict[str, str]] = []
@@ -128,22 +143,15 @@ def main() -> None:
       print("Escribe una consulta o 'salir'.")
       continue
 
-    prompt = build_prompt(history, user_input)
+    print("Buscando en la documentacion local...")
+    # Retrieve relevant documents
+    docs = vector_store.similarity_search(user_input, k=3)
+    context = "\n\n".join([d.page_content for d in docs])
+    
+    prompt = build_prompt(history, user_input, context)
 
-    try:
-      answer = generate_support_response(prompt)
-    except Exception as err:
-      error_text = str(err)
-      if "API key was reported as leaked" in error_text:
-        print(
-          "Error de autenticacion: tu API key fue reportada como filtrada. "
-          "Genera una nueva key y actualiza GENAI_API_KEY en .env"
-        )
-      elif "403" in error_text:
-        print("Error 403: permisos insuficientes o API key invalida.")
-      else:
-        print(f"Error al consultar el modelo: {error_text}")
-      continue
+    print("Generando respuesta con el LLM...")
+    answer = generate_support_response(prompt)
 
     print("\nRespuesta IA:")
     print(format_output_for_console(answer))
