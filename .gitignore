@@ -1,0 +1,13 @@
+# Entorno virtual
+env/
+venv/
+
+# Variables de entorno (API Keys)
+.env
+
+# Base de datos vectorial generada automaticamente
+chroma_db_ragas/
+
+# Archivos temporales de Python
+__pycache__/
+*.pyc
