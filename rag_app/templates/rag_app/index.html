@@ -1,0 +1,179 @@
+{% extends 'rag_app/base.html' %}
+
+{% block content %}
+<div class="row g-4">
+    <!-- Panel Izquierdo: Carga de Documentos -->
+    <div class="col-lg-4">
+        <div class="card h-100">
+            <div class="card-body">
+                <h4 class="card-title mb-2">Documento activo</h4>
+                <p class="text-muted">Sube un documento de ciberseguridad (PDF, TXT o MD) para iniciar las consultas.</p>
+                <form id="upload-form" method="POST" enctype="multipart/form-data" action="{% url 'upload_document' %}">
+                    {% csrf_token %}
+                    <div id="upload-zone" class="upload-zone">
+                        <strong>Arrastra tu archivo aqui</strong>
+                        <div class="text-muted">o selecciona desde tu equipo</div>
+                        <input class="form-control" type="file" id="file" name="file" accept=".pdf,.txt,.md" required>
+                    </div>
+                    <button type="submit" class="btn btn-outline-primary w-100 mt-3" id="btn-upload">Subir e indexar</button>
+                </form>
+                <div id="upload-status" class="pill" style="display: none;">
+                    ✅ Documento indexado. Puedes preguntar.
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Panel Derecho: Chat -->
+    <div class="col-lg-8">
+        <div class="card h-100">
+            <div class="card-body d-flex flex-column">
+                <div class="d-flex align-items-center justify-content-between mb-3">
+                    <h4 class="card-title mb-0">Chat de analisis</h4>
+                    <span class="pill">Groq + RAG</span>
+                </div>
+                <div class="chat-container mb-3 flex-grow-1" id="chat-box">
+                    <div class="message bot-message">
+                        <div class="message-content">
+                            Hola, soy tu asistente de ciberseguridad. Sube un documento a la izquierda y pregunta solo sobre ese contenido.
+                        </div>
+                    </div>
+                </div>
+                <form id="chat-form">
+                    {% csrf_token %}
+                    <div class="input-group">
+                        <input type="text" id="user-input" class="form-control" placeholder="Pregunta sobre el documento..." required disabled>
+                        <button class="btn btn-primary" type="submit" id="btn-send" disabled>Enviar</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script>
+    // Configuración para CSRF token
+    const csrftoken = document.querySelector('[name=csrfmiddlewaretoken]').value;
+
+    // Manejar subida de archivo
+    const uploadZone = document.getElementById('upload-zone');
+    const fileInput = document.getElementById('file');
+
+    uploadZone.addEventListener('dragover', (event) => {
+        event.preventDefault();
+        uploadZone.classList.add('dragover');
+    });
+
+    uploadZone.addEventListener('dragleave', () => {
+        uploadZone.classList.remove('dragover');
+    });
+
+    uploadZone.addEventListener('drop', (event) => {
+        event.preventDefault();
+        uploadZone.classList.remove('dragover');
+        if (event.dataTransfer.files.length) {
+            fileInput.files = event.dataTransfer.files;
+        }
+    });
+
+    document.getElementById('upload-form').addEventListener('submit', async function(e) {
+        e.preventDefault();
+        const formData = new FormData(this);
+        const btnUpload = document.getElementById('btn-upload');
+        btnUpload.disabled = true;
+        btnUpload.innerText = 'Indexando...';
+
+        try {
+            const response = await fetch("{% url 'upload_document' %}", {
+                method: 'POST',
+                body: formData,
+                headers: { 'X-CSRFToken': csrftoken }
+            });
+            const data = await response.json();
+            
+            if (response.ok) {
+                document.getElementById('upload-status').style.display = 'inline-flex';
+                document.getElementById('upload-status').innerText = '✅ ' + data.message;
+                document.getElementById('user-input').disabled = false;
+                document.getElementById('btn-send').disabled = false;
+            } else {
+                alert("Error: " + data.error);
+            }
+        } catch (error) {
+            console.error("Error:", error);
+            alert("Hubo un error al subir el archivo.");
+        } finally {
+            btnUpload.disabled = false;
+            btnUpload.innerText = 'Subir e Indexar';
+        }
+    });
+
+    // Manejar envío de mensaje en chat
+    document.getElementById('chat-form').addEventListener('submit', async function(e) {
+        e.preventDefault();
+        const inputField = document.getElementById('user-input');
+        const question = inputField.value.trim();
+        if (!question) return;
+
+        // Limpiar input y agregar mensaje del usuario
+        inputField.value = '';
+        appendMessage('user', question);
+
+        try {
+            const response = await fetch("{% url 'chat' %}", {
+                method: 'POST',
+                headers: { 
+                    'Content-Type': 'application/json',
+                    'X-CSRFToken': csrftoken
+                },
+                body: JSON.stringify({ question: question })
+            });
+            const data = await response.json();
+
+            if (response.ok) {
+                appendMessage('bot', data.answer, data.source);
+            } else {
+                appendMessage('bot', '❌ Error: ' + (data.error || 'Ocurrió un problema.'));
+            }
+        } catch (error) {
+            console.error("Error:", error);
+            appendMessage('bot', '❌ Error de red.');
+        }
+    });
+
+    function appendMessage(sender, text, sourceText = null) {
+        const chatBox = document.getElementById('chat-box');
+        const msgDiv = document.createElement('div');
+        msgDiv.className = `message ${sender}-message`;
+        
+        let innerHtml = `<div class="message-content">${text}</div>`;
+        
+        if (sourceText) {
+            const sourceId = 'source-' + Date.now();
+            innerHtml += `
+                <div class="mt-1 text-start">
+                    <button class="btn btn-sm btn-link source-toggle p-0" onclick="toggleSource('${sourceId}')">Ver fuente</button>
+                    <div id="${sourceId}" class="source-container">
+                        <strong>Fragmento consultado:</strong><br>${sourceText}
+                    </div>
+                </div>
+            `;
+        }
+        
+        msgDiv.innerHTML = innerHtml;
+        chatBox.appendChild(msgDiv);
+        chatBox.scrollTop = chatBox.scrollHeight;
+    }
+
+    function toggleSource(id) {
+        const el = document.getElementById(id);
+        if (el.style.display === 'none' || el.style.display === '') {
+            el.style.display = 'block';
+        } else {
+            el.style.display = 'none';
+        }
+    }
+</script>
+{% endblock %}
