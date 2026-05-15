@@ -1,0 +1,12 @@
+# Coloca aqui las 10 preguntas obligatorias de la rubrica
+# Una pregunta por linea. Las lineas que empiezan con # se ignoran.
+Que es un pirata etico y cual es su objetivo principal?
+Por que es importante seguir una metodologia de pentesting?
+Menciona dos herramientas basicas para un laboratorio de pentesting.
+Que factores ambientales se deben considerar en una prueba de penetracion?
+Que actores de amenazas se mencionan en el documento de actores de amenazas?
+Que riesgos se explican sobre romper algo durante una prueba?
+Que diferencias clave hay entre metodologias de pentesting segun la practica?
+Que conceptos principales se describen sobre ciberseguridad electrica?
+Que enfoque se usa para evaluar el nivel de seguridad en el articulo de analisis?
+Que conceptos basicos se mencionan en el documento de Linux?
