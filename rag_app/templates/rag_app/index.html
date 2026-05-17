@@ -3,73 +3,105 @@
 {% block content %}
 <div class="row g-4">
     <!-- Panel Izquierdo: Carga de Documentos -->
-    <div class="col-lg-4">
+    <section class="col-lg-4" aria-labelledby="documento-activo-heading">
         <div class="card h-100">
             <div class="card-body">
-                <h4 class="card-title mb-2">Documento activo</h4>
-                <p class="text-muted">Sube un documento de ciberseguridad (PDF, TXT o MD) para iniciar las consultas.</p>
-                <form id="upload-form" method="POST" enctype="multipart/form-data" action="{% url 'upload_document' %}">
+                <h2 class="card-title h4 mb-2" id="documento-activo-heading">Documento activo</h2>
+                <p class="text-muted" id="documento-activo-desc">
+                    Sube un documento de ciberseguridad (PDF, TXT o MD) para iniciar las consultas.
+                </p>
+                <form id="upload-form" method="POST" enctype="multipart/form-data" action="{% url 'upload_document' %}" aria-describedby="documento-activo-desc">
                     {% csrf_token %}
                     <div id="upload-zone" class="upload-zone">
-                        <strong>Arrastra tu archivo aqui</strong>
-                        <div class="text-muted">o selecciona desde tu equipo</div>
-                        <input class="form-control" type="file" id="file" name="file" accept=".pdf,.txt,.md" required>
+                        <label for="file" class="upload-label">
+                            <strong>Arrastra tu archivo aquí</strong>
+                            <span class="d-block text-muted">o selecciona desde tu equipo</span>
+                        </label>
+                        <input class="form-control" type="file" id="file" name="file" accept=".pdf,.txt,.md" required aria-describedby="documento-activo-desc">
                     </div>
-                    <button type="submit" class="btn btn-outline-primary w-100 mt-3" id="btn-upload">Subir e indexar</button>
+                    <button type="submit" class="btn btn-outline-primary w-100 mt-3" id="btn-upload">
+                        <span class="btn-upload-label">Subir e indexar</span>
+                        <span class="spinner-border spinner-border-sm ms-2 d-none" id="upload-spinner" role="status" aria-hidden="true"></span>
+                    </button>
                 </form>
-                <div id="upload-status" class="pill" style="display: none;">
-                    ✅ Documento indexado. Puedes preguntar.
+                <div id="upload-status" class="pill" style="display: none;" aria-live="polite">
+                    Documento indexado. Puedes preguntar.
                 </div>
+                <p class="mt-2 mb-0 text-muted small" id="active-file" hidden>
+                    Archivo activo: <span id="active-file-name"></span>
+                </p>
             </div>
         </div>
-    </div>
+    </section>
 
     <!-- Panel Derecho: Chat -->
-    <div class="col-lg-8">
+    <section class="col-lg-8" aria-labelledby="chat-heading">
         <div class="card h-100">
             <div class="card-body d-flex flex-column">
                 <div class="d-flex align-items-center justify-content-between mb-3">
-                    <h4 class="card-title mb-0">Chat de analisis</h4>
+                    <h2 class="card-title h4 mb-0" id="chat-heading">Chat de análisis</h2>
                     <span class="pill">Groq + RAG</span>
                 </div>
-                <div class="chat-container mb-3 flex-grow-1" id="chat-box">
-                    <div class="message bot-message">
+                <div class="chat-container mb-3 flex-grow-1" id="chat-box" role="log" aria-live="polite" aria-label="Historial del chat">
+                    <article class="message bot-message" role="status">
                         <div class="message-content">
-                            Hola, soy tu asistente de ciberseguridad. Sube un documento a la izquierda y pregunta solo sobre ese contenido.
+                            <div class="empty-state">
+                                <div class="empty-state-icon" aria-hidden="true">💬</div>
+                                <p class="mb-0">
+                                    Hola, soy tu asistente de ciberseguridad. Sube un documento a la izquierda y pregunta solo sobre ese contenido.
+                                </p>
+                            </div>
                         </div>
-                    </div>
+                    </article>
                 </div>
-                <form id="chat-form">
+                <form id="chat-form" aria-label="Enviar pregunta al asistente">
                     {% csrf_token %}
+                    <label for="user-input" class="visually-hidden">Pregunta sobre el documento</label>
                     <div class="input-group">
-                        <input type="text" id="user-input" class="form-control" placeholder="Pregunta sobre el documento..." required disabled>
-                        <button class="btn btn-primary" type="submit" id="btn-send" disabled>Enviar</button>
+                        <input type="text" id="user-input" class="form-control" placeholder="Pregunta sobre el documento..." required disabled aria-required="true">
+                        <button class="btn btn-primary" type="submit" id="btn-send" disabled aria-label="Enviar pregunta">Enviar</button>
                     </div>
                 </form>
             </div>
         </div>
-    </div>
+    </section>
 </div>
 {% endblock %}
 
 {% block scripts %}
 <script>
-    // Configuración para CSRF token
     const csrftoken = document.querySelector('[name=csrfmiddlewaretoken]').value;
-
-    // Manejar subida de archivo
     const uploadZone = document.getElementById('upload-zone');
     const fileInput = document.getElementById('file');
+    const uploadForm = document.getElementById('upload-form');
+    const btnUpload = document.getElementById('btn-upload');
+    const uploadSpinner = document.getElementById('upload-spinner');
+    const uploadLabel = btnUpload.querySelector('.btn-upload-label');
+    const uploadStatus = document.getElementById('upload-status');
+    const activeFile = document.getElementById('active-file');
+    const activeFileName = document.getElementById('active-file-name');
+    const chatBox = document.getElementById('chat-box');
+    const chatForm = document.getElementById('chat-form');
+    const userInput = document.getElementById('user-input');
+    const btnSend = document.getElementById('btn-send');
+    const toastStack = document.getElementById('toast-stack');
+
+    function showToast(message, variant = 'info') {
+        const toast = document.createElement('div');
+        toast.className = 'toast' + (variant === 'error' ? ' error' : '');
+        toast.setAttribute('role', variant === 'error' ? 'alert' : 'status');
+        toast.textContent = message;
+        toastStack.appendChild(toast);
+        setTimeout(() => toast.remove(), 4500);
+    }
 
     uploadZone.addEventListener('dragover', (event) => {
         event.preventDefault();
         uploadZone.classList.add('dragover');
     });
-
     uploadZone.addEventListener('dragleave', () => {
         uploadZone.classList.remove('dragover');
     });
-
     uploadZone.addEventListener('drop', (event) => {
         event.preventDefault();
         uploadZone.classList.remove('dragover');
@@ -78,12 +110,13 @@
         }
     });
 
-    document.getElementById('upload-form').addEventListener('submit', async function(e) {
+    uploadForm.addEventListener('submit', async function(e) {
         e.preventDefault();
         const formData = new FormData(this);
-        const btnUpload = document.getElementById('btn-upload');
+        const file = fileInput.files[0];
         btnUpload.disabled = true;
-        btnUpload.innerText = 'Indexando...';
+        uploadLabel.textContent = 'Indexando...';
+        uploadSpinner.classList.remove('d-none');
 
         try {
             const response = await fetch("{% url 'upload_document' %}", {
@@ -92,88 +125,131 @@
                 headers: { 'X-CSRFToken': csrftoken }
             });
             const data = await response.json();
-            
+
             if (response.ok) {
-                document.getElementById('upload-status').style.display = 'inline-flex';
-                document.getElementById('upload-status').innerText = '✅ ' + data.message;
-                document.getElementById('user-input').disabled = false;
-                document.getElementById('btn-send').disabled = false;
+                uploadStatus.style.display = 'inline-flex';
+                uploadStatus.textContent = data.message || 'Documento indexado. Puedes preguntar.';
+                if (file) {
+                    activeFileName.textContent = file.name;
+                    activeFile.hidden = false;
+                }
+                userInput.disabled = false;
+                btnSend.disabled = false;
+                showToast('Documento indexado correctamente.');
             } else {
-                alert("Error: " + data.error);
+                showToast('Error: ' + (data.error || 'No se pudo indexar el documento.'), 'error');
             }
         } catch (error) {
             console.error("Error:", error);
-            alert("Hubo un error al subir el archivo.");
+            showToast('Hubo un error al subir el archivo.', 'error');
         } finally {
             btnUpload.disabled = false;
-            btnUpload.innerText = 'Subir e Indexar';
+            uploadLabel.textContent = 'Subir e indexar';
+            uploadSpinner.classList.add('d-none');
         }
     });
 
-    // Manejar envío de mensaje en chat
-    document.getElementById('chat-form').addEventListener('submit', async function(e) {
+    chatForm.addEventListener('submit', async function(e) {
         e.preventDefault();
-        const inputField = document.getElementById('user-input');
-        const question = inputField.value.trim();
+        const question = userInput.value.trim();
         if (!question) return;
 
-        // Limpiar input y agregar mensaje del usuario
-        inputField.value = '';
+        userInput.value = '';
         appendMessage('user', question);
+        const typingEl = appendTypingIndicator();
+        btnSend.disabled = true;
 
         try {
             const response = await fetch("{% url 'chat' %}", {
                 method: 'POST',
-                headers: { 
+                headers: {
                     'Content-Type': 'application/json',
                     'X-CSRFToken': csrftoken
                 },
                 body: JSON.stringify({ question: question })
             });
             const data = await response.json();
+            typingEl.remove();
 
             if (response.ok) {
                 appendMessage('bot', data.answer, data.source);
             } else {
-                appendMessage('bot', '❌ Error: ' + (data.error || 'Ocurrió un problema.'));
+                appendMessage('bot', 'Error: ' + (data.error || 'Ocurrió un problema.'));
+                showToast(data.error || 'Ocurrió un problema con la consulta.', 'error');
             }
         } catch (error) {
+            typingEl.remove();
             console.error("Error:", error);
-            appendMessage('bot', '❌ Error de red.');
+            appendMessage('bot', 'Error de red. Inténtalo de nuevo.');
+            showToast('Error de red al consultar al asistente.', 'error');
+        } finally {
+            btnSend.disabled = false;
+            userInput.focus();
         }
     });
 
     function appendMessage(sender, text, sourceText = null) {
-        const chatBox = document.getElementById('chat-box');
-        const msgDiv = document.createElement('div');
+        const msgDiv = document.createElement('article');
         msgDiv.className = `message ${sender}-message`;
-        
-        let innerHtml = `<div class="message-content">${text}</div>`;
-        
-        if (sourceText) {
-            const sourceId = 'source-' + Date.now();
-            innerHtml += `
-                <div class="mt-1 text-start">
-                    <button class="btn btn-sm btn-link source-toggle p-0" onclick="toggleSource('${sourceId}')">Ver fuente</button>
-                    <div id="${sourceId}" class="source-container">
-                        <strong>Fragmento consultado:</strong><br>${sourceText}
-                    </div>
-                </div>
-            `;
+        if (sender === 'bot') {
+            msgDiv.setAttribute('role', 'status');
         }
-        
-        msgDiv.innerHTML = innerHtml;
+
+        const content = document.createElement('div');
+        content.className = 'message-content';
+        content.textContent = text;
+        msgDiv.appendChild(content);
+
+        if (sourceText) {
+            const sourceWrap = document.createElement('div');
+            sourceWrap.className = 'mt-1 text-start';
+
+            const sourceId = 'source-' + Date.now();
+            const toggleBtn = document.createElement('button');
+            toggleBtn.type = 'button';
+            toggleBtn.className = 'btn btn-sm btn-link source-toggle p-0';
+            toggleBtn.textContent = 'Ver fuente';
+            toggleBtn.setAttribute('aria-expanded', 'false');
+            toggleBtn.setAttribute('aria-controls', sourceId);
+            toggleBtn.addEventListener('click', () => toggleSource(sourceId, toggleBtn));
+
+            const sourceBox = document.createElement('div');
+            sourceBox.id = sourceId;
+            sourceBox.className = 'source-container';
+            sourceBox.innerHTML = '<strong>Fragmento consultado:</strong><br>';
+            sourceBox.appendChild(document.createTextNode(sourceText));
+
+            sourceWrap.appendChild(toggleBtn);
+            sourceWrap.appendChild(sourceBox);
+            msgDiv.appendChild(sourceWrap);
+        }
+
         chatBox.appendChild(msgDiv);
         chatBox.scrollTop = chatBox.scrollHeight;
     }
 
-    function toggleSource(id) {
+    function appendTypingIndicator() {
+        const msgDiv = document.createElement('article');
+        msgDiv.className = 'message bot-message typing';
+        msgDiv.innerHTML = `
+            <div class="message-content">
+                Pensando
+                <span class="typing-dot"></span>
+                <span class="typing-dot"></span>
+                <span class="typing-dot"></span>
+            </div>
+        `;
+        chatBox.appendChild(msgDiv);
+        chatBox.scrollTop = chatBox.scrollHeight;
+        return msgDiv;
+    }
+
+    function toggleSource(id, button) {
         const el = document.getElementById(id);
-        if (el.style.display === 'none' || el.style.display === '') {
-            el.style.display = 'block';
-        } else {
-            el.style.display = 'none';
-        }
+        const isVisible = el.style.display === 'block';
+        el.style.display = isVisible ? 'none' : 'block';
+        button.setAttribute('aria-expanded', String(!isVisible));
+        button.textContent = isVisible ? 'Ver fuente' : 'Ocultar fuente';
     }
 </script>
 {% endblock %}

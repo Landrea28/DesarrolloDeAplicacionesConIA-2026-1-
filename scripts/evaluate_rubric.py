@@ -72,7 +72,7 @@ def write_outputs(results: list[dict], output_dir: Path) -> None:
 
 def main() -> None:
     docs_dir = Path(os.getenv("RUBRIC_DOCS_DIR", "docs"))
-    questions_path = Path(os.getenv("RUBRIC_QUESTIONS_FILE", "rubric_questions.txt"))
+    questions_path = Path(os.getenv("RUBRIC_QUESTIONS_FILE", "docs/rubric_questions.txt"))
 
     if not questions_path.exists():
         raise FileNotFoundError(

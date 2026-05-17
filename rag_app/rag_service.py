@@ -20,7 +20,7 @@ CHUNK_SIZE = 1000
 CHUNK_OVERLAP = 150
 
 NON_CYBER_RESPONSE = (
-    "Lo siento soy un modelo entrenado para resolver dudad concretas "
+    "Lo siento soy un modelo entrenado para resolver dudas concretas "
     "de documentos concretos de CIBERSEGURIDAD"
 )
 NO_CONTEXT_RESPONSE = "No encuentro esa información en el reglamento"
@@ -51,7 +51,7 @@ Tu salida debe ser SOLO JSON valido, sin markdown ni texto extra, con estas clav
 
 Reglas de respuesta estrictas:
 - Si doc_is_cybersecurity es false O question_is_cybersecurity es false, answer debe ser EXACTAMENTE:
-  "Lo siento soy un modelo entrenado para resolver dudad concretas de documentos concretos de CIBERSEGURIDAD"
+  "Lo siento soy un modelo entrenado para resolver dudas concretas de documentos concretos de CIBERSEGURIDAD"
 - Si answer_in_context es false, answer debe ser EXACTAMENTE:
   "No encuentro esa información en el reglamento"
 - Si answer_in_context es true y las otras son true, answer debe ser breve, en espanol y basada SOLO en el CONTEXTO.
