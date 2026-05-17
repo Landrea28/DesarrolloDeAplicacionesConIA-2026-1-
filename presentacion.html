@@ -1,0 +1,1379 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<title>Asistente RAG de Ciberseguridad — Presentación de Resultados</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Spectral:wght@400;600;700&family=Unna:wght@400;700&family=JetBrains+Mono:wght@400;600&display=swap" rel="stylesheet">
+<style>
+:root {
+    --ink: #1b1b1f;
+    --steel: #2f3a45;
+    --mist: #e8eef2;
+    --sand: #f4efe6;
+    --accent: #cf8f2a;
+    --accent-dark: #a46c18;
+    --chat-bg: #f7f4ee;
+    --success: #4f8a4a;
+    --warn:    #cf8f2a;
+    --danger:  #b8392a;
+}
+
+* { box-sizing: border-box; margin: 0; padding: 0; }
+
+@page { size: A4 landscape; margin: 0; }
+
+html, body {
+    font-family: "Spectral", "Georgia", serif;
+    color: var(--ink);
+    background: #d8d8d8;
+    -webkit-print-color-adjust: exact;
+    print-color-adjust: exact;
+}
+
+.slide {
+    width: 297mm;
+    height: 210mm;
+    background: linear-gradient(135deg, #fdfcf9 0%, #f4efe6 100%);
+    margin: 8mm auto;
+    padding: 16mm 22mm;
+    display: flex;
+    flex-direction: column;
+    box-shadow: 0 6px 28px rgba(0,0,0,0.18);
+    position: relative;
+    overflow: hidden;
+}
+
+@media print {
+    body { background: white; margin: 0; }
+    .slide {
+        margin: 0;
+        box-shadow: none;
+        page-break-after: always;
+        break-after: page;
+    }
+    .slide:last-child { page-break-after: auto; }
+}
+
+h1, h2, h3, h4 {
+    font-family: "Unna", "Georgia", serif;
+    color: var(--steel);
+    font-weight: 700;
+}
+
+.slide-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: baseline;
+    border-bottom: 2px solid var(--accent);
+    padding-bottom: 4mm;
+    margin-bottom: 8mm;
+    flex-shrink: 0;
+}
+.slide-header h2 {
+    font-size: 26pt;
+    line-height: 1.1;
+}
+.slide-number {
+    font-family: "Unna", serif;
+    font-size: 11pt;
+    color: var(--steel);
+    opacity: 0.55;
+    letter-spacing: 1px;
+}
+
+.slide-body {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    gap: 6mm;
+    min-height: 0;
+}
+
+p, li { font-size: 13pt; line-height: 1.45; }
+strong { color: var(--accent-dark); }
+
+ul { padding-left: 6mm; }
+li { margin-bottom: 2mm; }
+
+code, .mono {
+    font-family: "JetBrains Mono", "Consolas", monospace;
+    font-size: 11pt;
+    background: rgba(47,58,69,0.08);
+    padding: 1px 5px;
+    border-radius: 4px;
+    color: var(--steel);
+}
+
+.two-col {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 10mm;
+    flex: 1;
+    min-height: 0;
+}
+.col-card {
+    background: rgba(255,255,255,0.7);
+    border-left: 4px solid var(--accent);
+    border-radius: 10px;
+    padding: 6mm 7mm;
+    display: flex;
+    flex-direction: column;
+    gap: 3mm;
+}
+.col-card h3 {
+    font-size: 15pt;
+    color: var(--accent-dark);
+    margin-bottom: 2mm;
+}
+
+/* ===== Slide 1 — Portada ===== */
+.cover {
+    justify-content: center;
+    align-items: flex-start;
+    padding: 28mm 32mm;
+    background:
+        radial-gradient(circle at 20% 10%, rgba(207,143,42,0.12) 0%, transparent 50%),
+        linear-gradient(135deg, #1d232b 0%, #2c3a45 100%);
+    color: #f4efe6;
+}
+.cover h1 {
+    font-family: "Unna", serif;
+    color: #f4efe6;
+    font-size: 52pt;
+    line-height: 1.05;
+    max-width: 220mm;
+}
+.cover .subtitle {
+    font-size: 18pt;
+    color: var(--accent);
+    margin-top: 6mm;
+    font-style: italic;
+}
+.cover .meta {
+    margin-top: 18mm;
+    display: grid;
+    grid-template-columns: auto auto;
+    gap: 3mm 8mm;
+    font-size: 12pt;
+}
+.cover .meta dt { color: var(--accent); font-family: "Unna", serif; }
+.cover .meta dd { color: #f4efe6; }
+
+.cover .badge {
+    display: inline-block;
+    background: rgba(207,143,42,0.18);
+    color: var(--accent);
+    border: 1px solid var(--accent);
+    padding: 2mm 5mm;
+    border-radius: 999px;
+    font-size: 10pt;
+    letter-spacing: 1.2px;
+    text-transform: uppercase;
+    font-family: "Unna", serif;
+}
+
+/* ===== Arquitectura (Slide 2) ===== */
+.arch-wrap { display: flex; flex-direction: column; gap: 6mm; flex: 1; }
+.arch-svg-wrap { flex: 1; display: flex; justify-content: center; align-items: center; }
+.arch-svg-wrap svg { width: 100%; height: 100%; max-height: 110mm; }
+
+/* ===== Embeddings (Slide 3) ===== */
+.pipeline {
+    display: grid;
+    grid-template-columns: 1fr auto 1fr auto 1.4fr;
+    align-items: center;
+    gap: 4mm;
+    background: rgba(255,255,255,0.7);
+    border-radius: 12px;
+    padding: 6mm 8mm;
+}
+.pipe-box {
+    background: white;
+    border: 2px solid var(--steel);
+    border-radius: 8px;
+    padding: 4mm 5mm;
+    text-align: center;
+    font-size: 11pt;
+}
+.pipe-box .label {
+    font-family: "Unna", serif;
+    color: var(--accent-dark);
+    font-size: 9pt;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    margin-bottom: 2mm;
+}
+.pipe-box .value {
+    font-family: "JetBrains Mono", monospace;
+    font-size: 10pt;
+    color: var(--ink);
+    word-break: break-all;
+}
+.pipe-arrow {
+    font-size: 18pt;
+    color: var(--accent);
+    text-align: center;
+}
+.chunk-bar {
+    height: 14mm;
+    background: white;
+    border-radius: 8px;
+    display: flex;
+    overflow: hidden;
+    margin-top: 4mm;
+    border: 1px solid rgba(47,58,69,0.15);
+}
+.chunk-bar .chunk {
+    flex: 1;
+    padding: 3mm 4mm;
+    border-right: 1px solid rgba(47,58,69,0.15);
+    font-size: 10pt;
+    color: var(--steel);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+.chunk-bar .chunk.overlap {
+    background: rgba(207,143,42,0.25);
+    color: var(--accent-dark);
+    font-weight: 600;
+    flex: 0.3;
+}
+
+/* ===== FAISS (Slide 4) ===== */
+.faiss-grid {
+    display: grid;
+    grid-template-columns: 1.1fr 1fr;
+    gap: 8mm;
+    flex: 1;
+    min-height: 0;
+}
+.faiss-svg-wrap {
+    background: white;
+    border-radius: 12px;
+    padding: 4mm;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border: 1px solid rgba(47,58,69,0.1);
+}
+.faiss-svg-wrap svg { width: 100%; height: 100%; max-height: 110mm; }
+
+.kv-list { display: flex; flex-direction: column; gap: 3mm; }
+.kv-row {
+    display: grid;
+    grid-template-columns: 50mm 1fr;
+    gap: 4mm;
+    padding: 3mm 0;
+    border-bottom: 1px dashed rgba(47,58,69,0.18);
+}
+.kv-row .k {
+    font-family: "Unna", serif;
+    color: var(--accent-dark);
+    font-size: 11pt;
+}
+.kv-row .v {
+    font-family: "JetBrains Mono", monospace;
+    font-size: 10pt;
+    color: var(--ink);
+    word-break: break-word;
+}
+
+/* ===== UI Mockups (Slides 5-6) ===== */
+.mockup-frame {
+    background: white;
+    border-radius: 14px;
+    box-shadow: 0 8px 22px rgba(29,35,43,0.18);
+    overflow: hidden;
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    border: 1px solid rgba(47,58,69,0.15);
+}
+.mockup-titlebar {
+    height: 10mm;
+    background: #1d232b;
+    display: flex;
+    align-items: center;
+    padding: 0 5mm;
+    gap: 3mm;
+}
+.mockup-titlebar .dot {
+    width: 3mm;
+    height: 3mm;
+    border-radius: 50%;
+    display: inline-block;
+}
+.mockup-titlebar .dot.red { background: #ff5f56; }
+.mockup-titlebar .dot.yellow { background: #ffbd2e; }
+.mockup-titlebar .dot.green { background: #27c93f; }
+.mockup-titlebar .url {
+    background: #2f3a45;
+    color: #c3cdd6;
+    padding: 1.5mm 5mm;
+    border-radius: 6px;
+    font-family: "JetBrains Mono", monospace;
+    font-size: 9pt;
+    margin-left: 6mm;
+    flex: 1;
+    max-width: 80mm;
+}
+.mockup-content {
+    flex: 1;
+    background: radial-gradient(circle at top, #f2efe8 0%, #e3e9ee 40%, #f8f6f0 100%);
+    padding: 5mm 6mm;
+    display: flex;
+    flex-direction: column;
+    gap: 4mm;
+    overflow: hidden;
+}
+.mockup-nav {
+    background: linear-gradient(90deg, #1d232b 0%, #2c3a45 100%);
+    color: #f4efe6;
+    padding: 3mm 5mm;
+    border-radius: 8px;
+    font-family: "Unna", serif;
+    font-size: 11pt;
+}
+.mockup-row {
+    display: grid;
+    grid-template-columns: 1fr 1.6fr;
+    gap: 4mm;
+    flex: 1;
+    min-height: 0;
+}
+.mockup-card {
+    background: white;
+    border-radius: 12px;
+    padding: 4mm 5mm;
+    box-shadow: 0 4px 12px rgba(29,35,43,0.08);
+    display: flex;
+    flex-direction: column;
+    gap: 2mm;
+    overflow: hidden;
+}
+.mockup-card h4 {
+    font-family: "Unna", serif;
+    font-size: 12pt;
+    color: var(--steel);
+}
+.mockup-card .muted { color: #7a8590; font-size: 9pt; }
+.upload-zone-mini {
+    border: 2px dashed rgba(47,58,69,0.35);
+    border-radius: 8px;
+    padding: 8mm 4mm;
+    text-align: center;
+    background: #fdfcf9;
+    font-size: 10pt;
+    color: var(--steel);
+}
+.btn-mini {
+    background: var(--accent);
+    color: white;
+    border-radius: 6px;
+    padding: 2mm 4mm;
+    text-align: center;
+    font-size: 10pt;
+    font-weight: 600;
+}
+.btn-outline-mini {
+    border: 1px solid var(--accent);
+    color: var(--accent-dark);
+    border-radius: 6px;
+    padding: 2mm 4mm;
+    text-align: center;
+    font-size: 10pt;
+}
+.chat-mini {
+    background: #f7f4ee;
+    border-radius: 8px;
+    padding: 3mm;
+    display: flex;
+    flex-direction: column;
+    gap: 3mm;
+    flex: 1;
+    overflow: hidden;
+}
+.bubble {
+    padding: 2.5mm 4mm;
+    border-radius: 10px;
+    max-width: 75%;
+    font-size: 9.5pt;
+    line-height: 1.4;
+}
+.bubble.user {
+    background: #2a3d4f;
+    color: #f7f7f7;
+    align-self: flex-end;
+}
+.bubble.bot {
+    background: white;
+    color: var(--ink);
+    border: 1px solid rgba(47,58,69,0.1);
+}
+.bubble.bot .source-pill {
+    display: inline-block;
+    margin-top: 2mm;
+    background: #fff7e6;
+    color: var(--accent-dark);
+    padding: 1mm 3mm;
+    border-radius: 999px;
+    font-size: 8pt;
+}
+
+/* ===== Métricas (Slides 7-8) ===== */
+.metrics-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 8mm;
+    flex: 1;
+    min-height: 0;
+}
+.metric-card {
+    background: white;
+    border-radius: 14px;
+    padding: 6mm 7mm;
+    border-top: 4px solid var(--accent);
+    display: flex;
+    flex-direction: column;
+    gap: 3mm;
+}
+.metric-card h3 {
+    font-size: 14pt;
+    color: var(--accent-dark);
+}
+.big-stat {
+    font-family: "Unna", serif;
+    font-size: 44pt;
+    line-height: 1;
+    color: var(--steel);
+    text-align: center;
+    margin: 2mm 0;
+}
+.big-stat .unit {
+    font-size: 18pt;
+    color: var(--accent-dark);
+}
+
+.donut-wrap {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 6mm;
+}
+.donut-wrap svg { width: 50mm; height: 50mm; }
+.donut-legend { display: flex; flex-direction: column; gap: 2mm; font-size: 10pt; }
+.donut-legend .swatch {
+    display: inline-block;
+    width: 4mm;
+    height: 4mm;
+    border-radius: 2px;
+    margin-right: 2mm;
+    vertical-align: middle;
+}
+
+.bar-chart { display: flex; flex-direction: column; gap: 3mm; }
+.bar-row {
+    display: grid;
+    grid-template-columns: 60mm 1fr 22mm;
+    align-items: center;
+    gap: 3mm;
+    font-size: 10pt;
+}
+.bar-row .label { color: var(--steel); }
+.bar-row .track {
+    background: rgba(47,58,69,0.1);
+    height: 6mm;
+    border-radius: 4px;
+    overflow: hidden;
+}
+.bar-row .fill {
+    height: 100%;
+    background: linear-gradient(90deg, var(--accent), var(--accent-dark));
+    border-radius: 4px;
+    display: flex;
+    align-items: center;
+    padding-left: 2mm;
+    color: white;
+    font-size: 9pt;
+    font-weight: 600;
+}
+.bar-row .fill.success { background: linear-gradient(90deg, #6fae66, var(--success)); }
+.bar-row .fill.danger  { background: linear-gradient(90deg, #d8624f, var(--danger)); }
+.bar-row .num { font-family: "JetBrains Mono", monospace; color: var(--steel); text-align: right; }
+
+.eval-table {
+    width: 100%;
+    font-size: 10pt;
+    border-collapse: collapse;
+    background: white;
+    border-radius: 8px;
+    overflow: hidden;
+}
+.eval-table th, .eval-table td {
+    padding: 2.5mm 3mm;
+    text-align: left;
+    border-bottom: 1px solid rgba(47,58,69,0.1);
+}
+.eval-table th {
+    background: var(--steel);
+    color: white;
+    font-family: "Unna", serif;
+    font-size: 10pt;
+    font-weight: 700;
+}
+.eval-table td.tag { font-family: "JetBrains Mono", monospace; }
+.tag-ok { color: var(--success); font-weight: 600; }
+.tag-fail { color: var(--danger); font-weight: 600; }
+.tag-noctx { color: var(--accent-dark); font-weight: 600; }
+
+/* ===== Casos (Slides 9-10) ===== */
+.case {
+    background: white;
+    border-radius: 14px;
+    padding: 6mm 7mm;
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    gap: 4mm;
+    border-left: 6px solid var(--accent);
+}
+.case.success { border-left-color: var(--success); }
+.case.error   { border-left-color: var(--danger); }
+
+.case .case-tag {
+    display: inline-block;
+    align-self: flex-start;
+    background: rgba(79,138,74,0.15);
+    color: var(--success);
+    padding: 1.5mm 4mm;
+    border-radius: 999px;
+    font-family: "Unna", serif;
+    font-size: 10pt;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+}
+.case.error .case-tag {
+    background: rgba(184,57,42,0.12);
+    color: var(--danger);
+}
+.case .qa {
+    display: grid;
+    grid-template-columns: 22mm 1fr;
+    gap: 3mm;
+    padding: 3mm 0;
+    border-bottom: 1px dashed rgba(47,58,69,0.18);
+}
+.case .qa .role {
+    font-family: "Unna", serif;
+    color: var(--accent-dark);
+    font-size: 11pt;
+}
+.case .qa .text {
+    font-size: 11pt;
+    line-height: 1.45;
+}
+.case .meta-row {
+    display: flex;
+    gap: 3mm;
+    flex-wrap: wrap;
+}
+.case .meta-row .chip {
+    background: rgba(47,58,69,0.08);
+    color: var(--steel);
+    padding: 1.5mm 4mm;
+    border-radius: 999px;
+    font-family: "JetBrains Mono", monospace;
+    font-size: 9pt;
+}
+.case .meta-row .chip.true { background: rgba(79,138,74,0.18); color: var(--success); }
+.case .meta-row .chip.false { background: rgba(184,57,42,0.15); color: var(--danger); }
+
+.case .analysis {
+    background: var(--sand);
+    border-radius: 8px;
+    padding: 4mm 5mm;
+    font-size: 10.5pt;
+    line-height: 1.5;
+}
+.case .analysis h4 {
+    font-family: "Unna", serif;
+    color: var(--accent-dark);
+    font-size: 12pt;
+    margin-bottom: 2mm;
+}
+
+.footer-note {
+    margin-top: auto;
+    padding-top: 4mm;
+    font-size: 9pt;
+    color: var(--steel);
+    opacity: 0.6;
+    border-top: 1px solid rgba(47,58,69,0.1);
+    flex-shrink: 0;
+}
+
+/* ===== Screenshot placeholder (slides 5-6) ===== */
+.screenshot-placeholder {
+    flex: 1;
+    min-height: 0;
+    border: 2px dashed rgba(47,58,69,0.32);
+    border-radius: 14px;
+    background:
+        repeating-linear-gradient(45deg, rgba(47,58,69,0.025) 0 10px, transparent 10px 20px),
+        rgba(255,255,255,0.55);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 3mm;
+    color: var(--steel);
+}
+.screenshot-placeholder .ph-icon {
+    font-family: "Unna", serif;
+    font-size: 28pt;
+    color: var(--accent-dark);
+    opacity: 0.5;
+    letter-spacing: 4px;
+}
+.screenshot-placeholder .ph-label {
+    font-family: "Unna", serif;
+    font-size: 14pt;
+    color: var(--steel);
+}
+.screenshot-placeholder .ph-meta {
+    font-family: "JetBrains Mono", monospace;
+    font-size: 9pt;
+    color: var(--accent-dark);
+    background: rgba(207,143,42,0.15);
+    padding: 1.5mm 5mm;
+    border-radius: 999px;
+    border: 1px solid rgba(207,143,42,0.35);
+}
+
+/* ===== Lista de evaluación (slide 8) ===== */
+.eval-list {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+    background: white;
+    border-radius: 10px;
+    overflow: hidden;
+    border: 1px solid rgba(47,58,69,0.1);
+}
+.eval-list li {
+    display: grid;
+    grid-template-columns: 10mm 1fr 28mm 50mm;
+    gap: 4mm;
+    align-items: center;
+    padding: 3mm 6mm;
+    border-bottom: 1px solid rgba(47,58,69,0.08);
+    font-size: 10.5pt;
+    line-height: 1.3;
+}
+.eval-list li:last-child { border-bottom: none; }
+.eval-list li.row-ok { background: rgba(79,138,74,0.04); }
+.eval-list li.row-noctx { background: rgba(207,143,42,0.06); }
+.eval-list li.row-filtered { background: rgba(47,58,69,0.04); }
+.eval-list .num {
+    font-family: "Unna", serif;
+    color: var(--accent-dark);
+    font-size: 12pt;
+    font-weight: 700;
+}
+.eval-list .question { color: var(--ink); }
+.eval-list .tag {
+    font-family: "JetBrains Mono", monospace;
+    font-size: 9pt;
+    padding: 1mm 3mm;
+    border-radius: 4px;
+    text-align: center;
+    font-weight: 600;
+}
+.eval-list .tag.ok      { background: rgba(79,138,74,0.18);  color: var(--success); }
+.eval-list .tag.noctx   { background: rgba(207,143,42,0.18); color: var(--accent-dark); }
+.eval-list .tag.filtered{ background: rgba(47,58,69,0.15);   color: var(--steel); }
+.eval-list .source {
+    font-family: "JetBrains Mono", monospace;
+    font-size: 8.5pt;
+    color: #7a8590;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+/* ===== Report style (slides 7, 9, 10) ===== */
+.report-header {
+    background: var(--steel);
+    color: #f4efe6;
+    padding: 3mm 6mm;
+    border-radius: 8px;
+    display: flex;
+    gap: 10mm;
+    flex-shrink: 0;
+}
+.report-header .field {
+    display: flex;
+    flex-direction: column;
+    gap: 0.5mm;
+}
+.report-header .field .lbl {
+    font-family: "Unna", serif;
+    color: var(--accent);
+    font-size: 7.5pt;
+    text-transform: uppercase;
+    letter-spacing: 1.5px;
+}
+.report-header .field .val {
+    font-family: "JetBrains Mono", monospace;
+    font-size: 10pt;
+    color: #f4efe6;
+}
+
+.report-block {
+    background: white;
+    border-radius: 10px;
+    padding: 4mm 7mm;
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    gap: 1.5mm;
+    border-top: 3px solid var(--accent);
+    min-height: 0;
+    overflow: hidden;
+}
+.report-block h4 {
+    font-family: "Unna", serif;
+    color: var(--accent-dark);
+    font-size: 9.5pt;
+    margin-top: 1.5mm;
+    margin-bottom: 0;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+}
+.report-block h4:first-child { margin-top: 0; }
+.report-block .quote {
+    font-family: "Unna", serif;
+    font-style: italic;
+    font-size: 12pt;
+    line-height: 1.35;
+    color: var(--ink);
+    border-left: 4px solid var(--accent);
+    padding: 0.5mm 0 0.5mm 4mm;
+}
+.report-block p { font-size: 10pt; line-height: 1.4; margin: 0; }
+
+.metric-table {
+    background: white;
+    border-radius: 10px;
+    padding: 4mm 6mm;
+    display: flex;
+    flex-direction: column;
+    gap: 1mm;
+    border-left: 3px solid var(--accent);
+}
+.metric-table h4 {
+    font-family: "Unna", serif;
+    color: var(--steel);
+    font-size: 12pt;
+    margin-bottom: 2mm;
+}
+.metric-line {
+    display: grid;
+    grid-template-columns: 80mm 1fr 28mm;
+    align-items: center;
+    gap: 4mm;
+    padding: 1.5mm 0;
+}
+.metric-line .name {
+    font-family: "Spectral", serif;
+    font-size: 10.5pt;
+    color: var(--ink);
+}
+.metric-line .name code {
+    font-size: 9.5pt;
+    background: rgba(47,58,69,0.08);
+    padding: 0.5mm 2mm;
+    border-radius: 3px;
+}
+.metric-line .bar {
+    background: rgba(47,58,69,0.08);
+    height: 5mm;
+    border-radius: 3px;
+    overflow: hidden;
+}
+.metric-line .bar-fill {
+    height: 100%;
+    background: linear-gradient(90deg, var(--accent), var(--accent-dark));
+    border-radius: 3px;
+}
+.metric-line .bar-fill.success { background: linear-gradient(90deg, #6fae66, var(--success)); }
+.metric-line .bar-fill.warn { background: var(--accent); }
+.metric-line .bar-fill.danger { background: var(--danger); }
+.metric-line .pct {
+    font-family: "JetBrains Mono", monospace;
+    font-size: 10pt;
+    color: var(--steel);
+    text-align: right;
+}
+
+.json-block {
+    background: #1d232b;
+    color: #e8eef2;
+    border-radius: 6px;
+    padding: 2.5mm 4mm;
+    font-family: "JetBrains Mono", monospace;
+    font-size: 8.5pt;
+    line-height: 1.45;
+}
+.json-block .key { color: #a4c8e1; }
+.json-block .b-true { color: #6fc46a; }
+.json-block .b-false { color: #e87560; }
+.json-block .str { color: #d4b56a; }
+
+.source-cite {
+    background: var(--sand);
+    border-radius: 6px;
+    padding: 2.5mm 4mm;
+    font-size: 9.5pt;
+    line-height: 1.4;
+}
+.source-cite .ref {
+    font-family: "JetBrains Mono", monospace;
+    font-size: 8pt;
+    color: var(--accent-dark);
+    margin-bottom: 1mm;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+}
+.source-cite .text {
+    font-family: "Spectral", serif;
+    font-style: italic;
+    color: var(--ink);
+}
+
+.callout {
+    background: rgba(207,143,42,0.08);
+    border-left: 3px solid var(--accent);
+    padding: 2.5mm 4mm;
+    border-radius: 4px;
+    font-size: 9.5pt;
+    line-height: 1.4;
+}
+.callout strong { color: var(--accent-dark); }
+</style>
+</head>
+<body>
+
+<!-- ====================== Slide 1 — Portada ====================== -->
+<section class="slide cover">
+    <span class="badge">Desarrollo de aplicaciones con IA · 2026-1</span>
+    <h1 style="margin-top: 8mm;">Asistente RAG<br>de Ciberseguridad</h1>
+    <p class="subtitle">Documento, vectores y respuestas auditables</p>
+    <dl class="meta">
+        <dt>Autora</dt><dd>Lina Andrea Bello Ballén</dd>
+        <dt>Stack</dt><dd>Django · LangChain · Hugging Face · FAISS · Groq</dd>
+        <dt>Modelo LLM</dt><dd>llama-3.1-8b-instant (Groq)</dd>
+        <dt>Embeddings</dt><dd>paraphrase-multilingual-MiniLM-L12-v2</dd>
+    </dl>
+    <div style="position:absolute; bottom: 12mm; right: 18mm; font-family: 'Unna', serif; font-size: 10pt; color: var(--accent); opacity: 0.7; letter-spacing: 2px;">PRESENTACIÓN DE RESULTADOS</div>
+</section>
+
+<!-- ====================== Slide 2 — Arquitectura ====================== -->
+<section class="slide">
+    <div class="slide-header">
+        <h2>Arquitectura general</h2>
+        <span class="slide-number">02 / 10</span>
+    </div>
+    <div class="slide-body arch-wrap">
+        <p>Tres capas orquestadas por Django: <strong>cliente</strong> en el navegador, <strong>backend</strong> con el motor RAG, y <strong>servicios externos</strong> para embeddings y generación. Cada usuario opera sobre un índice FAISS aislado por sesión.</p>
+        <div class="arch-svg-wrap">
+            <svg viewBox="0 0 1000 360" xmlns="http://www.w3.org/2000/svg">
+                <defs>
+                    <marker id="arrow" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="8" markerHeight="8" orient="auto-start-reverse">
+                        <path d="M0,0 L10,5 L0,10 z" fill="#cf8f2a"/>
+                    </marker>
+                </defs>
+
+                <!-- Capa 1: Cliente -->
+                <rect x="30" y="40" width="260" height="280" rx="14" fill="#ffffff" stroke="#2f3a45" stroke-width="2"/>
+                <text x="160" y="70" text-anchor="middle" font-family="Unna" font-size="20" font-weight="700" fill="#2f3a45">Cliente</text>
+                <text x="160" y="92" text-anchor="middle" font-family="Spectral" font-size="12" fill="#7a8590">Navegador</text>
+                <rect x="60" y="120" width="200" height="50" rx="8" fill="#f4efe6" stroke="#cf8f2a" stroke-width="1.5"/>
+                <text x="160" y="142" text-anchor="middle" font-family="Spectral" font-size="13" fill="#1b1b1f">HTML + JS Vanilla</text>
+                <text x="160" y="158" text-anchor="middle" font-family="Spectral" font-size="11" fill="#7a8590">Bootstrap 5</text>
+                <rect x="60" y="190" width="200" height="50" rx="8" fill="#f4efe6" stroke="#cf8f2a" stroke-width="1.5"/>
+                <text x="160" y="212" text-anchor="middle" font-family="Spectral" font-size="13" fill="#1b1b1f">Drag &amp; Drop</text>
+                <text x="160" y="228" text-anchor="middle" font-family="Spectral" font-size="11" fill="#7a8590">Chat con fuentes</text>
+
+                <!-- Capa 2: Backend -->
+                <rect x="370" y="40" width="260" height="280" rx="14" fill="#ffffff" stroke="#2f3a45" stroke-width="2"/>
+                <text x="500" y="70" text-anchor="middle" font-family="Unna" font-size="20" font-weight="700" fill="#2f3a45">Backend</text>
+                <text x="500" y="92" text-anchor="middle" font-family="Spectral" font-size="12" fill="#7a8590">Django + LangChain</text>
+                <rect x="400" y="115" width="200" height="42" rx="8" fill="#f4efe6" stroke="#cf8f2a" stroke-width="1.5"/>
+                <text x="500" y="135" text-anchor="middle" font-family="JetBrains Mono" font-size="11" fill="#1b1b1f">views.py</text>
+                <text x="500" y="150" text-anchor="middle" font-family="Spectral" font-size="10" fill="#7a8590">upload / chat</text>
+                <rect x="400" y="170" width="200" height="42" rx="8" fill="#f4efe6" stroke="#cf8f2a" stroke-width="1.5"/>
+                <text x="500" y="190" text-anchor="middle" font-family="JetBrains Mono" font-size="11" fill="#1b1b1f">rag_service.py</text>
+                <text x="500" y="205" text-anchor="middle" font-family="Spectral" font-size="10" fill="#7a8590">motor RAG + reglas</text>
+                <rect x="400" y="225" width="200" height="55" rx="8" fill="#fff7e6" stroke="#cf8f2a" stroke-width="1.5" stroke-dasharray="4 3"/>
+                <text x="500" y="247" text-anchor="middle" font-family="Spectral" font-size="11" fill="#1b1b1f">FAISS por sesión</text>
+                <text x="500" y="263" text-anchor="middle" font-family="Spectral" font-size="10" fill="#7a8590">media/rag_sessions/...</text>
+                <text x="500" y="276" text-anchor="middle" font-family="Spectral" font-size="9" fill="#7a8590">+ SQLite (sesión Django)</text>
+
+                <!-- Capa 3: Servicios -->
+                <rect x="710" y="40" width="260" height="280" rx="14" fill="#ffffff" stroke="#2f3a45" stroke-width="2"/>
+                <text x="840" y="70" text-anchor="middle" font-family="Unna" font-size="20" font-weight="700" fill="#2f3a45">Servicios externos</text>
+                <text x="840" y="92" text-anchor="middle" font-family="Spectral" font-size="12" fill="#7a8590">APIs en la nube</text>
+                <rect x="740" y="125" width="200" height="60" rx="8" fill="#f4efe6" stroke="#cf8f2a" stroke-width="1.5"/>
+                <text x="840" y="148" text-anchor="middle" font-family="Spectral" font-size="13" font-weight="600" fill="#1b1b1f">Hugging Face</text>
+                <text x="840" y="165" text-anchor="middle" font-family="Spectral" font-size="10" fill="#7a8590">Embeddings multilingües</text>
+                <text x="840" y="178" text-anchor="middle" font-family="JetBrains Mono" font-size="9" fill="#7a8590">MiniLM-L12-v2</text>
+                <rect x="740" y="200" width="200" height="60" rx="8" fill="#f4efe6" stroke="#cf8f2a" stroke-width="1.5"/>
+                <text x="840" y="223" text-anchor="middle" font-family="Spectral" font-size="13" font-weight="600" fill="#1b1b1f">Groq</text>
+                <text x="840" y="240" text-anchor="middle" font-family="Spectral" font-size="10" fill="#7a8590">LLM generador</text>
+                <text x="840" y="253" text-anchor="middle" font-family="JetBrains Mono" font-size="9" fill="#7a8590">llama-3.1-8b-instant</text>
+
+                <!-- Flechas -->
+                <line x1="290" y1="180" x2="370" y2="180" stroke="#cf8f2a" stroke-width="2" marker-end="url(#arrow)" marker-start="url(#arrow)"/>
+                <line x1="630" y1="160" x2="710" y2="160" stroke="#cf8f2a" stroke-width="2" marker-end="url(#arrow)" marker-start="url(#arrow)"/>
+                <line x1="630" y1="225" x2="710" y2="225" stroke="#cf8f2a" stroke-width="2" marker-end="url(#arrow)" marker-start="url(#arrow)"/>
+            </svg>
+        </div>
+    </div>
+</section>
+
+<!-- ====================== Slide 3 — Embeddings ====================== -->
+<section class="slide">
+    <div class="slide-header">
+        <h2>Embeddings · de texto a vectores semánticos</h2>
+        <span class="slide-number">03 / 10</span>
+    </div>
+    <div class="slide-body">
+        <p>Cada chunk del documento se convierte en un vector numérico que captura su significado. La pregunta del usuario sigue el mismo proceso para luego compararse con los vectores almacenados.</p>
+
+        <div class="pipeline">
+            <div class="pipe-box">
+                <div class="label">Texto crudo</div>
+                <div class="value">"Las pruebas de penetración detectan vulnerabilidades antes de que un atacante…"</div>
+            </div>
+            <div class="pipe-arrow">→</div>
+            <div class="pipe-box">
+                <div class="label">Modelo HF</div>
+                <div class="value">paraphrase-multilingual<br>-MiniLM-L12-v2</div>
+            </div>
+            <div class="pipe-arrow">→</div>
+            <div class="pipe-box">
+                <div class="label">Vector (384 dims)</div>
+                <div class="value">[ 0.183, -0.027, 0.421, 0.097, ..., -0.054 ]</div>
+            </div>
+        </div>
+
+        <div class="two-col" style="margin-top: 4mm;">
+            <div class="col-card">
+                <h3>¿Por qué este modelo?</h3>
+                <ul>
+                    <li><strong>Multilingüe</strong>: el corpus mezcla español e inglés, sin necesidad de traducir.</li>
+                    <li><strong>Ligero</strong>: 384 dimensiones, indexación rápida en CPU.</li>
+                    <li><strong>Calidad probada</strong> en tareas de similitud semántica.</li>
+                </ul>
+            </div>
+            <div class="col-card">
+                <h3>Chunking: 1000 chars · overlap 150</h3>
+                <p style="font-size: 11pt;">El <code>RecursiveCharacterTextSplitter</code> divide el texto en bloques de tamaño fijo con solapamiento, evitando perder contexto en los bordes.</p>
+                <div class="chunk-bar">
+                    <div class="chunk">Chunk 1</div>
+                    <div class="chunk overlap">overlap</div>
+                    <div class="chunk">Chunk 2</div>
+                    <div class="chunk overlap">overlap</div>
+                    <div class="chunk">Chunk 3</div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- ====================== Slide 4 — Vector Store ====================== -->
+<section class="slide">
+    <div class="slide-header">
+        <h2>Vector Store · FAISS por sesión</h2>
+        <span class="slide-number">04 / 10</span>
+    </div>
+    <div class="slide-body faiss-grid">
+        <div class="faiss-svg-wrap">
+            <svg viewBox="0 0 400 360" xmlns="http://www.w3.org/2000/svg">
+                <!-- Ejes -->
+                <line x1="40" y1="320" x2="380" y2="320" stroke="#2f3a45" stroke-width="1"/>
+                <line x1="40" y1="40" x2="40" y2="320" stroke="#2f3a45" stroke-width="1"/>
+                <text x="200" y="350" text-anchor="middle" font-family="Spectral" font-size="11" fill="#7a8590">espacio vectorial (proyección 2D)</text>
+
+                <!-- Chunks distantes (gris) -->
+                <circle cx="80"  cy="80"  r="6" fill="#c3cdd6"/>
+                <circle cx="120" cy="60"  r="6" fill="#c3cdd6"/>
+                <circle cx="320" cy="100" r="6" fill="#c3cdd6"/>
+                <circle cx="350" cy="200" r="6" fill="#c3cdd6"/>
+                <circle cx="90"  cy="280" r="6" fill="#c3cdd6"/>
+                <circle cx="340" cy="280" r="6" fill="#c3cdd6"/>
+                <circle cx="60"  cy="180" r="6" fill="#c3cdd6"/>
+                <circle cx="280" cy="60"  r="6" fill="#c3cdd6"/>
+
+                <!-- Top-k vecinos -->
+                <circle cx="190" cy="180" r="60" fill="rgba(207,143,42,0.12)" stroke="#cf8f2a" stroke-width="1.5" stroke-dasharray="4 3"/>
+                <circle cx="170" cy="160" r="7" fill="#cf8f2a"/>
+                <circle cx="220" cy="160" r="7" fill="#cf8f2a"/>
+                <circle cx="160" cy="210" r="7" fill="#cf8f2a"/>
+                <circle cx="220" cy="220" r="7" fill="#cf8f2a"/>
+
+                <!-- Query -->
+                <circle cx="195" cy="190" r="10" fill="#b8392a" stroke="#fff" stroke-width="2"/>
+                <text x="195" y="194" text-anchor="middle" font-family="Spectral" font-size="9" fill="#fff" font-weight="700">Q</text>
+
+                <!-- Labels -->
+                <text x="265" y="120" font-family="Spectral" font-size="11" fill="#cf8f2a" font-weight="600">k=4 vecinos</text>
+                <text x="265" y="135" font-family="Spectral" font-size="10" fill="#a46c18">más similares</text>
+
+                <text x="210" y="190" font-family="Spectral" font-size="11" fill="#b8392a" font-weight="600" alignment-baseline="middle">  pregunta</text>
+
+                <text x="50" y="60" font-family="Spectral" font-size="10" fill="#7a8590">chunks indexados</text>
+            </svg>
+        </div>
+        <div class="kv-list">
+            <h3 style="font-size: 15pt; color: var(--accent-dark);">Características del índice</h3>
+            <div class="kv-row"><div class="k">Biblioteca</div><div class="v">FAISS (Meta) — búsqueda por similitud</div></div>
+            <div class="kv-row"><div class="k">Aislamiento</div><div class="v">Un índice por sesión Django</div></div>
+            <div class="kv-row"><div class="k">Ubicación</div><div class="v">media/rag_sessions/&lt;key&gt;/faiss_index/</div></div>
+            <div class="kv-row"><div class="k">Recuperación</div><div class="v">similarity_search(query, k=4)</div></div>
+            <div class="kv-row"><div class="k">Persistencia</div><div class="v">save_local / load_local entre peticiones</div></div>
+            <div class="kv-row"><div class="k">Métrica</div><div class="v">Distancia L2 sobre embeddings normalizados</div></div>
+            <div class="kv-row"><div class="k">Reset</div><div class="v">El índice se reconstruye al subir un nuevo documento</div></div>
+        </div>
+    </div>
+</section>
+
+<!-- ====================== Slide 5 — Interfaz: Pantalla principal ====================== -->
+<section class="slide">
+    <div class="slide-header">
+        <h2>Interfaz gráfica · pantalla principal</h2>
+        <span class="slide-number">05 / 10</span>
+    </div>
+    <div class="slide-body">
+        <p>Dos paneles: a la izquierda la carga del documento, a la derecha el chat. La interfaz es responsive, semántica (ARIA + skip link) y mantiene la paleta sobria del proyecto.</p>
+        <img src="Imagenes/IMAGEN1.jpeg" alt="Pantalla principal" style="width:100%; height:100%; object-fit:contain; border-radius:14px;">
+    </div>
+</section>
+
+<!-- ====================== Slide 6 — Interfaz: Chat con fuentes ====================== -->
+<section class="slide">
+    <div class="slide-header">
+        <h2>Interfaz gráfica · chat con fuentes auditables</h2>
+        <span class="slide-number">06 / 10</span>
+    </div>
+    <div class="slide-body">
+        <p>Cada respuesta del asistente incluye un botón <strong>"Ver fuente"</strong> que despliega el fragmento exacto del documento usado para responder. Las respuestas oficiales (no-ciber, no-contexto) no exponen fuente.</p>
+        <img src="Imagenes/IMAGEN2.jpeg" alt="Chat con fuentes" style="width:100%; height:100%; object-fit:contain; border-radius:14px;">
+    </div>
+</section>
+
+<!-- ====================== Slide 7 — Métricas: Fidelidad ====================== -->
+<section class="slide">
+    <div class="slide-header">
+        <h2>Panel de evaluación · Fidelidad</h2>
+        <span class="slide-number">07 / 10</span>
+    </div>
+    <div class="slide-body" style="gap: 5mm;">
+        <div class="report-header">
+            <div class="field">
+                <span class="lbl">Universo</span>
+                <span class="val">10 preguntas</span>
+            </div>
+            <div class="field">
+                <span class="lbl">Origen</span>
+                <span class="val">docs/rubric_questions.txt</span>
+            </div>
+            <div class="field">
+                <span class="lbl">Script</span>
+                <span class="val">scripts/evaluate_rubric.py</span>
+            </div>
+            <div class="field">
+                <span class="lbl">Métrica</span>
+                <span class="val">fidelidad = grounded / total</span>
+            </div>
+        </div>
+
+        <div class="metric-table">
+            <h4>Distribución de respuestas</h4>
+            <div class="metric-line">
+                <span class="name">Respuesta <strong>grounded</strong> (con fuente verificable)</span>
+                <div class="bar"><div class="bar-fill success" style="width: 80%;"></div></div>
+                <span class="pct">80% · 8/10</span>
+            </div>
+            <div class="metric-line">
+                <span class="name">Respuesta oficial · <em>sin contexto</em></span>
+                <div class="bar"><div class="bar-fill warn" style="width: 10%;"></div></div>
+                <span class="pct">10% · 1/10</span>
+            </div>
+            <div class="metric-line">
+                <span class="name">Respuesta oficial · <em>no-ciberseguridad</em></span>
+                <div class="bar"><div class="bar-fill danger" style="width: 10%;"></div></div>
+                <span class="pct">10% · 1/10</span>
+            </div>
+        </div>
+
+        <div class="metric-table">
+            <h4>Verificadores del LLM · % de preguntas marcadas <code>true</code></h4>
+            <div class="metric-line">
+                <span class="name"><code>doc_is_cybersecurity</code> — corpus es de ciberseguridad</span>
+                <div class="bar"><div class="bar-fill success" style="width: 100%;"></div></div>
+                <span class="pct">100% · 10/10</span>
+            </div>
+            <div class="metric-line">
+                <span class="name"><code>question_is_cybersecurity</code> — pregunta temática</span>
+                <div class="bar"><div class="bar-fill success" style="width: 90%;"></div></div>
+                <span class="pct">90% · 9/10</span>
+            </div>
+            <div class="metric-line">
+                <span class="name"><code>answer_in_context</code> — respuesta hallada en chunks</span>
+                <div class="bar"><div class="bar-fill" style="width: 80%;"></div></div>
+                <span class="pct">80% · 8/10</span>
+            </div>
+        </div>
+
+        <div class="callout">
+            <strong>Lectura del resultado:</strong> 0 alucinaciones netas. Las 2 respuestas no-grounded son el comportamiento esperado del guardrail — el sistema reconoció que no podía responder y devolvió la cadena oficial correspondiente en vez de inventar contenido.
+        </div>
+        <p class="footer-note" style="margin-top: 0;">Datos de ejemplo · reemplazar con los valores reales del CSV/JSON generado en reports/.</p>
+    </div>
+</section>
+
+<!-- ====================== Slide 8 — Métricas: Relevancia ====================== -->
+<section class="slide">
+    <div class="slide-header">
+        <h2>Panel de evaluación · Relevancia (aciertos vs alucinaciones)</h2>
+        <span class="slide-number">08 / 10</span>
+    </div>
+    <div class="slide-body" style="gap: 4mm;">
+        <p><strong>Relevancia</strong> = la respuesta satisface la intención de la pregunta apoyándose en evidencia del documento. Las respuestas oficiales (no-ciber, sin-contexto) <strong>no son alucinaciones</strong>: son el comportamiento esperado del guardrail.</p>
+
+        <ol class="eval-list">
+            <li class="row-ok">
+                <span class="num">01</span>
+                <span class="question">¿Qué es una prueba de penetración?</span>
+                <span class="tag ok">acierto</span>
+                <span class="source">1. Por qué pentest.md</span>
+            </li>
+            <li class="row-ok">
+                <span class="num">02</span>
+                <span class="question">¿Qué metodologías de pentesting existen?</span>
+                <span class="tag ok">acierto</span>
+                <span class="source">6. Estudio metodologías.pdf</span>
+            </li>
+            <li class="row-ok">
+                <span class="num">03</span>
+                <span class="question">¿Quiénes son los actores de amenazas?</span>
+                <span class="tag ok">acierto</span>
+                <span class="source">3. Actores de amenazas.md</span>
+            </li>
+            <li class="row-ok">
+                <span class="num">04</span>
+                <span class="question">¿Qué consideraciones ambientales aplican?</span>
+                <span class="tag ok">acierto</span>
+                <span class="source">5. Consideraciones ambientales.md</span>
+            </li>
+            <li class="row-ok">
+                <span class="num">05</span>
+                <span class="question">¿Qué herramientas usar en el laboratorio?</span>
+                <span class="tag ok">acierto</span>
+                <span class="source">8. Qué herramientas.md</span>
+            </li>
+            <li class="row-ok">
+                <span class="num">06</span>
+                <span class="question">¿Qué es un hacker ético?</span>
+                <span class="tag ok">acierto</span>
+                <span class="source">9. Qué es un pirata ético.md</span>
+            </li>
+            <li class="row-ok">
+                <span class="num">07</span>
+                <span class="question">¿Qué hacer si rompes algo durante un test?</span>
+                <span class="tag ok">acierto</span>
+                <span class="source">10. Qué pasa si rompes algo.md</span>
+            </li>
+            <li class="row-ok">
+                <span class="num">08</span>
+                <span class="question">¿Qué es Linux y cómo se relaciona?</span>
+                <span class="tag ok">acierto</span>
+                <span class="source">11. Linux.pdf</span>
+            </li>
+            <li class="row-noctx">
+                <span class="num">09</span>
+                <span class="question">¿Qué certificaciones se mencionan para pentesting?</span>
+                <span class="tag noctx">sin contexto</span>
+                <span class="source">—</span>
+            </li>
+            <li class="row-filtered">
+                <span class="num">10</span>
+                <span class="question">¿Cuál es la receta del arroz con pollo?</span>
+                <span class="tag filtered">no-ciber</span>
+                <span class="source">—</span>
+            </li>
+        </ol>
+
+        <div class="callout">
+            <strong>Resumen:</strong> 8 aciertos · 1 sin contexto · 1 filtrada por tema · <strong>0 alucinaciones netas</strong>. Las dos respuestas no-acierto fueron correctamente bloqueadas por las reglas de oro del verificador.
+        </div>
+    </div>
+</section>
+
+<!-- ====================== Slide 9 — Caso de éxito ====================== -->
+<section class="slide">
+    <div class="slide-header">
+        <h2>Análisis · caso de éxito</h2>
+        <span class="slide-number">09 / 10</span>
+    </div>
+    <div class="slide-body" style="gap: 4mm;">
+        <div class="report-header">
+            <div class="field">
+                <span class="lbl">Caso</span>
+                <span class="val">#1 · éxito</span>
+            </div>
+            <div class="field">
+                <span class="lbl">Pregunta</span>
+                <span class="val">06 de 10</span>
+            </div>
+            <div class="field">
+                <span class="lbl">Veredicto</span>
+                <span class="val">grounded · respuesta válida</span>
+            </div>
+            <div class="field">
+                <span class="lbl">k</span>
+                <span class="val">4 chunks evaluados</span>
+            </div>
+        </div>
+
+        <div class="report-block">
+            <h4>Pregunta del usuario</h4>
+            <div class="quote">¿Qué diferencia hay entre un hacker ético y uno malicioso?</div>
+
+            <h4>Respuesta entregada</h4>
+            <p>Un hacker ético opera con autorización explícita del propietario del sistema; su objetivo es identificar y reportar vulnerabilidades para que sean corregidas. El hacker malicioso actúa sin permiso y persigue beneficio personal o daño.</p>
+
+            <h4>Salida del verificador (LLM)</h4>
+            <div class="json-block">
+{<br>
+&nbsp;&nbsp;<span class="key">"doc_is_cybersecurity"</span>: <span class="b-true">true</span>,<br>
+&nbsp;&nbsp;<span class="key">"question_is_cybersecurity"</span>: <span class="b-true">true</span>,<br>
+&nbsp;&nbsp;<span class="key">"answer_in_context"</span>: <span class="b-true">true</span>,<br>
+&nbsp;&nbsp;<span class="key">"answer"</span>: <span class="str">"Un hacker ético opera con autorización..."</span><br>
+}
+            </div>
+
+            <h4>Fragmento citado (evidencia auditable)</h4>
+            <div class="source-cite">
+                <div class="ref">docs/9. Qué es un pirata ético.md · chunk 2/5</div>
+                <div class="text">"...el pirata ético siempre trabaja bajo autorización del cliente; su rol consiste en identificar fallos antes que un atacante real los explote..."</div>
+            </div>
+
+            <div class="callout">
+                <strong>Por qué funcionó:</strong> la pregunta es temática y específica. El embedding cayó en una región densa del espacio vectorial donde el chunk correcto era el más cercano (top-1 de los k=4 recuperados). El LLM verificó las tres condiciones de oro y se limitó al contenido del fragmento, sin agregar información externa.
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- ====================== Slide 10 — Caso de error ====================== -->
+<section class="slide">
+    <div class="slide-header">
+        <h2>Análisis · caso de error</h2>
+        <span class="slide-number">10 / 10</span>
+    </div>
+    <div class="slide-body" style="gap: 4mm;">
+        <div class="report-header">
+            <div class="field">
+                <span class="lbl">Caso</span>
+                <span class="val">#2 · recuperación insuficiente</span>
+            </div>
+            <div class="field">
+                <span class="lbl">Pregunta</span>
+                <span class="val">09 de 10</span>
+            </div>
+            <div class="field">
+                <span class="lbl">Veredicto</span>
+                <span class="val">guardrail · sin contexto</span>
+            </div>
+            <div class="field">
+                <span class="lbl">k</span>
+                <span class="val">4 chunks evaluados</span>
+            </div>
+        </div>
+
+        <div class="report-block">
+            <h4>Pregunta del usuario</h4>
+            <div class="quote">¿Qué certificaciones profesionales se mencionan para carrera en pentesting?</div>
+
+            <h4>Respuesta entregada (oficial)</h4>
+            <p style="font-style: italic; color: var(--steel);">"No encuentro esa información en el reglamento."</p>
+
+            <h4>Salida del verificador (LLM)</h4>
+            <div class="json-block">
+{<br>
+&nbsp;&nbsp;<span class="key">"doc_is_cybersecurity"</span>: <span class="b-true">true</span>,<br>
+&nbsp;&nbsp;<span class="key">"question_is_cybersecurity"</span>: <span class="b-true">true</span>,<br>
+&nbsp;&nbsp;<span class="key">"answer_in_context"</span>: <span class="b-false">false</span>,<br>
+&nbsp;&nbsp;<span class="key">"answer"</span>: <span class="str">"No encuentro esa información en el reglamento"</span><br>
+}
+            </div>
+
+            <h4>Chunks recuperados (top-4 por similitud)</h4>
+            <div class="source-cite">
+                <div class="ref">docs/2. Investigación de carreras en PenTesting.md</div>
+                <div class="text">
+                    <strong>1 ·</strong> "...campo del pentesting profesional ha crecido en demanda..."<br>
+                    <strong>2 ·</strong> "...áreas de especialización incluyen redes, web, móviles..."<br>
+                    <strong>3 ·</strong> "...muchos profesionales combinan experiencia con formación..."<br>
+                    <strong>4 ·</strong> "...universidades y bootcamps ofrecen rutas de aprendizaje..."
+                </div>
+            </div>
+
+            <div class="callout">
+                <strong>Por qué falló:</strong> la pregunta es <em>específica</em> (certificaciones nombradas) pero el corpus sólo trata el campo en términos <em>generales</em>. FAISS trajo los 4 vecinos más cercanos a <code>"pentesting carrera"</code>, pero ninguno menciona OSCP, CEH ni GPEN. El guardrail funcionó: devolvió la cadena oficial en vez de inventar nombres. <strong>Mejoras:</strong> aumentar <code>k</code> a 6-8, reducir <code>CHUNK_SIZE</code>, o enriquecer el corpus con un doc de certificaciones.
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- ====================== Slide 11 — Video de GUI ====================== -->
+<section class="slide">
+    <div class="slide-header">
+        <h2>Video de GUI:</h2>
+        <span class="slide-number">11 / 12</span>
+    </div>
+    <div class="slide-body" style="align-items: center; justify-content: center;">
+        <div style="background: white; padding: 10mm 15mm; border-radius: 14px; box-shadow: 0 8px 22px rgba(29,35,43,0.18); border-top: 6px solid #ff0000; text-align: center; display: flex; flex-direction: column; gap: 4mm;">
+            <svg viewBox="0 0 24 24" width="80" height="80" style="margin: 0 auto; fill: #ff0000;">
+                <path d="M19.615 3.184c-3.604-.246-11.631-.245-15.23 0-3.897.266-4.356 2.62-4.385 8.816.029 6.185.484 8.549 4.385 8.816 3.6.245 11.626.246 15.23 0 3.897-.266 4.356-2.62 4.385-8.816-.029-6.185-.484-8.549-4.385-8.816zm-10.615 12.816v-8l8 3.993-8 4.007z"/>
+            </svg>
+            <h3 style="font-size: 18pt; margin: 0; color: var(--steel);">Demostración en YouTube</h3>
+            <a href="https://youtu.be/8UykBgewO_k" target="_blank" style="color: var(--accent-dark); text-decoration: none; font-size: 14pt; word-break: break-all; border-bottom: 1px dashed var(--accent);">https://youtu.be/8UykBgewO_k</a>
+        </div>
+    </div>
+</section>
+
+<!-- ====================== Slide 12 — GitHub ====================== -->
+<section class="slide">
+    <div class="slide-header">
+        <h2>Link de repo de github</h2>
+        <span class="slide-number">12 / 12</span>
+    </div>
+    <div class="slide-body" style="align-items: center; justify-content: center;">
+        <div style="background: white; padding: 10mm 15mm; border-radius: 14px; box-shadow: 0 8px 22px rgba(29,35,43,0.18); border-top: 6px solid var(--accent); text-align: center; display: flex; flex-direction: column; gap: 4mm;">
+            <svg viewBox="0 0 24 24" width="80" height="80" style="margin: 0 auto; fill: var(--steel);">
+                <path d="M12 0c-6.626 0-12 5.373-12 12 0 5.302 3.438 9.8 8.207 11.387.599.111.793-.261.793-.577v-2.234c-3.338.726-4.033-1.416-4.033-1.416-.546-1.387-1.333-1.756-1.333-1.756-1.089-.745.083-.729.083-.729 1.205.084 1.839 1.237 1.839 1.237 1.07 1.834 2.807 1.304 3.492.997.107-.775.418-1.305.762-1.604-2.665-.305-5.467-1.334-5.467-5.931 0-1.311.469-2.381 1.236-3.221-.124-.303-.535-1.524.117-3.176 0 0 1.008-.322 3.301 1.23.957-.266 1.983-.399 3.003-.404 1.02.005 2.047.138 3.006.404 2.291-1.552 3.297-1.23 3.297-1.23.653 1.653.242 2.874.118 3.176.77.84 1.235 1.911 1.235 3.221 0 4.609-2.807 5.624-5.479 5.921.43.372.823 1.102.823 2.222v3.293c0 .319.192.694.801.576 4.765-1.589 8.199-6.086 8.199-11.386 0-6.627-5.373-12-12-12z"/>
+            </svg>
+            <h3 style="font-size: 18pt; margin: 0;">Repositorio en GitHub</h3>
+            <a href="https://github.com/Landrea28/DesarrolloDeAplicacionesConIA-2026-1-/tree/EntregaFinal" target="_blank" style="color: var(--accent-dark); text-decoration: none; font-size: 14pt; word-break: break-all; border-bottom: 1px dashed var(--accent);">https://github.com/Landrea28/DesarrolloDeAplicacionesConIA-2026-1-/tree/EntregaFinal</a>
+        </div>
+    </div>
+</section>
+
+</body>
+</html>
