@@ -115,7 +115,7 @@ flowchart LR
 - **Cliente (frontend):** templates Django (`base.html`, `index.html`) con JavaScript vanilla y Bootstrap 5. Maneja subida con drag-and-drop, render del chat e indicadores de carga.
 - **Backend (Django):** vistas `index`, `upload_document` y `chat` en [rag_app/views.py](rag_app/views.py). El motor RAG vive en [rag_app/rag_service.py](rag_app/rag_service.py).
 - **Persistencia local:** SQLite para la sesión Django (`db.sqlite3`); índice FAISS por sesión en `media/rag_sessions/<session_key>/faiss_index/`.
-- **Servicios externos:** Hugging Face (embeddings multilingües) y Groq (LLM `llama3-8b-8192`).
+- **Servicios externos:** Hugging Face (embeddings multilingües) y Groq (LLM `llama-3.1-8b-instant`).
 
 ---
 
@@ -372,7 +372,7 @@ Luego, [rag_service.py](rag_app/rag_service.py) (`run_guarded_answer`) parsea el
 - Si `answer_in_context == false` → devuelve la respuesta oficial de sin-contexto.
 - Solo si los tres son `true` se devuelve la respuesta generada por el modelo.
 
-El modelo de Groq usado es `llama3-8b-8192` (configurable con la variable de entorno `GROQ_MODEL`) con `temperature=0.2` y `max_tokens=700` para favorecer respuestas deterministas y concisas.
+El modelo de Groq usado es `llama-3.1-8b-instant` (configurable con la variable de entorno `GROQ_MODEL`) con `temperature=0.2` y `max_tokens=700` para favorecer respuestas deterministas y concisas.
 
 ### Reglas de seguridad y respuestas oficiales
 

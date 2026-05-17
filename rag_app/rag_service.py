@@ -154,7 +154,7 @@ def get_llm() -> ChatGroq:
     api_key = os.getenv("GROQ_API_KEY")
     if not api_key:
         raise RuntimeError("Falta la variable de entorno GROQ_API_KEY.")
-    model_name = os.getenv("GROQ_MODEL", "llama3-8b-8192")
+    model_name = os.getenv("GROQ_MODEL", "llama-3.1-8b-instant")
     return ChatGroq(
         model=model_name,
         temperature=0.2,
