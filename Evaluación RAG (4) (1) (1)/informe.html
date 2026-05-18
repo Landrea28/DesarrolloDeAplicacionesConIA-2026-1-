@@ -1,28 +1,28 @@
-<!DOCTYPE html>
+﻿<!DOCTYPE html>
 <html lang="es">
 <head>
 <meta charset="UTF-8">
-<title>Análisis de Evaluación de un Sistema RAG</title>
+<title>Proyecto: Comparación de Modelos TF-IDF y BM25</title>
 <style>
   /* ===== Variables ===== */
   :root {
-    --accent: #1e4d8c;
-    --accent-light: #e8f0fb;
-    --text: #1a1a1a;
-    --muted: #555;
-    --border: #d4d4d4;
-    --code-bg: #f5f5f7;
-    --highlight: #fff8db;
-    --success: #2d7d46;
-    --warning: #b87333;
-    --danger: #b3261e;
+    --accent: #000000;
+    --accent-light: #ffffff;
+    --text: #000000;
+    --muted: #000000;
+    --border: #000000;
+    --code-bg: #ffffff;
+    --highlight: #ffffff;
+    --success: #000000;
+    --warning: #000000;
+    --danger: #000000;
   }
 
   /* ===== Tipografía y base ===== */
   * { box-sizing: border-box; }
   html { font-size: 11pt; }
   body {
-    font-family: 'Georgia', 'Times New Roman', serif;
+    font-family: 'Times New Roman', serif;
     color: var(--text);
     line-height: 1.65;
     max-width: 850px;
@@ -31,7 +31,7 @@
     background: #fff;
   }
   h1, h2, h3, h4 {
-    font-family: 'Helvetica Neue', 'Arial', sans-serif;
+    font-family: 'Times New Roman', serif;
     color: var(--accent);
     line-height: 1.3;
     page-break-after: avoid;
@@ -75,7 +75,7 @@
     padding: 9px 12px;
     text-align: left;
     font-weight: 600;
-    font-family: 'Helvetica Neue', sans-serif;
+    font-family: 'Times New Roman', serif;
   }
   td {
     padding: 8px 12px;
@@ -95,7 +95,7 @@
     font-size: 28pt;
     color: var(--accent);
     margin-bottom: 8px;
-    font-family: 'Helvetica Neue', sans-serif;
+    font-family: 'Times New Roman', serif;
   }
   .cover .subtitulo {
     font-size: 14pt;
@@ -115,11 +115,7 @@
   }
 
   .resumen-ejecutivo {
-    background: var(--accent-light);
-    border-left: 4px solid var(--accent);
-    padding: 20px 28px;
     margin: 1.5em 0;
-    border-radius: 4px;
     page-break-inside: avoid;
   }
   .resumen-ejecutivo h3 { margin-top: 0; color: var(--accent); }
@@ -182,7 +178,7 @@
     font-size: 28pt;
     color: var(--accent);
     font-weight: 700;
-    font-family: 'Helvetica Neue', sans-serif;
+    font-family: 'Times New Roman', serif;
     display: block;
   }
   .metric-card .label { font-size: 0.9em; color: var(--muted); }
@@ -193,7 +189,7 @@
     border-radius: 10px;
     font-size: 0.8em;
     font-weight: 600;
-    font-family: 'Helvetica Neue', sans-serif;
+    font-family: 'Times New Roman', serif;
   }
   .badge.success { background: #d4edda; color: var(--success); }
   .badge.warning { background: #fdf2e0; color: var(--warning); }
@@ -218,7 +214,7 @@
   .fase-titulo {
     font-weight: 700;
     color: var(--accent);
-    font-family: 'Helvetica Neue', sans-serif;
+    font-family: 'Times New Roman', serif;
     margin-bottom: 6px;
     font-size: 0.95em;
   }
@@ -255,7 +251,10 @@
     body { padding: 0; max-width: 100%; }
     h1, h2 { page-break-after: avoid; }
     h2 { page-break-before: auto; }
-    figure, table, .hallazgo, .resumen-ejecutivo { page-break-inside: avoid; }
+    figure, table, .hallazgo, .resumen-ejecutivo {
+    margin: 1.5em 0;
+    page-break-inside: avoid;
+  }
     a { color: var(--text); }
     a[href^="http"]::after {
       content: " (" attr(href) ")";
@@ -269,19 +268,16 @@
 
 <!-- ========== PORTADA ========== -->
 <section class="cover">
-  <div class="titulo">Análisis de la Evaluación<br>de un Sistema RAG</div>
-  <div class="subtitulo">Pipeline de Generación Aumentada por Recuperación sobre programas académicos</div>
-
-  <div class="info">
-    <div><strong>Autor:</strong> Lina Andrea Bello Ballen</div>
-    <div><strong>Código:</strong> 506241153</div>
-    <div><strong>Asignatura:</strong> Desarrollo de Aplicaciones con IA</div>
-    <div><strong>Periodo:</strong> 2026 - 1</div>
+  <div style="font-size: 24pt; font-weight: bold; text-align: center; margin-top: 50px; margin-bottom: 120px; font-family: 'Times New Roman', serif; color: black;">
+    Proyecto: Comparación de Modelos TF-IDF y BM25
   </div>
 
-  <div class="institucion">
-    Ingeniería de Sistemas · Facultad de Ingeniería<br>
-    Mayo de 2026
+  <div style="text-align: left; font-size: 12pt; line-height: 2.5; margin-left: 10%; font-family: 'Times New Roman', serif;">
+    Lina Andrea Bello Ballen<br><br>
+    Facultad de Ingeniería y Matemáticas<br><br>
+    Ingeniería de Sistemas<br><br>
+    Bogotá, Colombia<br><br>
+    18 de mayo de 2026
   </div>
 </section>
 
@@ -289,6 +285,11 @@
 <h2 id="resumen">Resumen ejecutivo</h2>
 
 <div class="resumen-ejecutivo">
+  <p style="margin: 0 0 1em 0;">
+    <strong>Repositorio de GitHub:</strong><br>
+    <a href="https://github.com/Landrea28/DesarrolloDeAplicacionesConIA-2026-1-/tree/RAG">https://github.com/Landrea28/DesarrolloDeAplicacionesConIA-2026-1-/tree/RAG</a><br>
+    <em>(Recuerda que este link lleva directo a la rama "RAG" ya que el repositorio es de todos los trabajos en el semeste, en esta unica rama se encuentra este proyecto)</em>
+  </p>
   <h3>En tres puntos</h3>
   <ul>
     <li><strong>Qué hace:</strong> el sistema responde preguntas sobre programas de asignatura universitarios usando una arquitectura RAG (Retrieval-Augmented Generation) y mide automáticamente la calidad de cada respuesta con el framework RAGAS.</li>
@@ -305,21 +306,15 @@ El presente documento describe el diseño, la implementación y la evaluación d
 <strong>Palabras clave:</strong> RAG, LangChain, ChromaDB, RAGAS, LLM, embeddings, recuperación de información, Groq, Llama.
 </p>
 
-<div class="resumen-ejecutivo" style="margin-top: 1.5em;">
-  <p style="margin: 0;">
-    <strong>Repositorio de GitHub:</strong><br>
-    <a href="https://github.com/Landrea28/DesarrolloDeAplicacionesConIA-2026-1-/tree/RAG">https://github.com/Landrea28/DesarrolloDeAplicacionesConIA-2026-1-/tree/RAG</a><br>
-    <em>(Recuerda que este link lleva directo a la rama "RAG" ya que el repositorio es de todos los trabajos en el semeste, en esta unica rama se encuentra este proyecto)</em>
-  </p>
-</div>
+
 
 <!-- ========== TABLA DE CONTENIDO ========== -->
 <h2 id="indice" class="section-break">Tabla de contenido</h2>
 
 <ol class="toc">
   <li><span class="numero">1.</span> <a href="#introduccion">Introducción y planteamiento del problema</a></li>
-  <li><span class="numero">2.</span> <a href="#tecnologias">Tecnologías del sistema</a></li>
-  <li><span class="numero">3.</span> <a href="#arquitectura">Arquitectura del pipeline</a></li>
+  <li><span class="numero">2.</span> <a href="#glosario">Glosario</a></li>
+  <li><span class="numero">3.</span> <a href="#tecnologias">Tecnologías del sistema</a></li>
   <li><span class="numero">4.</span> <a href="#marco-teorico">Marco teórico</a></li>
   <li class="subitem"><a href="#mt-rag">4.1 RAG: Generación Aumentada por Recuperación</a></li>
   <li class="subitem"><a href="#mt-embeddings">4.2 Embeddings y representación semántica</a></li>
@@ -331,8 +326,7 @@ El presente documento describe el diseño, la implementación y la evaluación d
   <li><span class="numero">8.</span> <a href="#hallazgos">Hallazgos y discusión</a></li>
   <li><span class="numero">9.</span> <a href="#limitaciones">Limitaciones</a></li>
   <li><span class="numero">10.</span> <a href="#conclusiones">Conclusiones y trabajo futuro</a></li>
-  <li><span class="numero">11.</span> <a href="#glosario">Glosario</a></li>
-  <li><span class="numero">12.</span> <a href="#referencias">Referencias</a></li>
+  <li><span class="numero">11.</span> <a href="#referencias">Referencias</a></li>
 </ol>
 
 <!-- ========== 1. INTRODUCCIÓN ========== -->
@@ -346,8 +340,25 @@ Los sistemas de preguntas y respuestas sobre documentos propios son uno de los c
 Este trabajo implementa un pipeline RAG completo para consultar programas de asignaturas universitarias en formato PDF, junto con un script de evaluación independiente que automatiza la inferencia y la medición de calidad con RAGAS. A diferencia de un cuaderno de exploración, el script funciona como una pieza autónoma que recibe un conjunto de preguntas de prueba, ejecuta el pipeline completo y exporta los resultados en Markdown.
 </p>
 
-<!-- ========== 2. TECNOLOGÍAS ========== -->
-<h2 id="tecnologias">2. Tecnologías del sistema</h2>
+<!-- ========== 2. GLOSARIO ========== -->
+<h2 id="glosario" class="section-break">2. Glosario</h2>
+
+<table>
+  <thead><tr><th>Término</th><th>Definición</th></tr></thead>
+  <tbody>
+    <tr><td><strong>API Key</strong></td><td>Credencial secreta que autoriza el acceso a una API remota (en este proyecto, Groq).</td></tr>
+    <tr><td><strong>Chunk</strong></td><td>Fragmento de un documento dividido en porciones manejables para su procesamiento.</td></tr>
+    <tr><td><strong>Embedding</strong></td><td>Vector numérico que representa el significado de un texto.</td></tr>
+    <tr><td><strong>Ground truth</strong></td><td>Respuesta de referencia considerada correcta, usada para comparar contra la salida del sistema.</td></tr>
+    <tr><td><strong>LLM</strong></td><td>"Large Language Model" — modelo de IA entrenado para generar y comprender texto.</td></tr>
+    <tr><td><strong>RAG</strong></td><td>"Retrieval-Augmented Generation" — patrón que combina búsqueda de información y generación con un LLM.</td></tr>
+    <tr><td><strong>Retriever</strong></td><td>Componente del pipeline que busca los fragmentos más relevantes para una consulta.</td></tr>
+    <tr><td><strong>Similitud coseno</strong></td><td>Medida matemática del ángulo entre dos vectores; aquí, qué tan parecidos son dos textos.</td></tr>
+  </tbody>
+</table>
+
+<!-- ========== 3. TECNOLOGÍAS ========== -->
+<h2 id="tecnologias">3. Tecnologías del sistema</h2>
 
 <table>
   <thead>
@@ -369,41 +380,6 @@ Este trabajo implementa un pipeline RAG completo para consultar programas de asi
     <tr><td>Reporte</td><td>pandas + tabulate</td><td>Genera la tabla final y exporta a Markdown.</td></tr>
   </tbody>
 </table>
-
-<!-- ========== 3. ARQUITECTURA ========== -->
-<h2 id="arquitectura">3. Arquitectura del pipeline</h2>
-
-<p>
-El sistema implementa una arquitectura RAG estándar de ocho pasos, divididos en dos fases bien diferenciadas: indexación (offline) e inferencia (online), seguidas de una fase de evaluación con RAGAS.
-</p>
-
-<div class="diagrama">
-  <div class="fase">
-    <div class="fase-titulo">FASE 1 — INDEXACIÓN (offline, se ejecuta una sola vez)</div>
-    <div class="fase-pasos">
-      PDFs (docs/) → PyPDFLoader → Text Splitter (chunk=1000, overlap=200)<br>
-      → Embeddings con all-MiniLM-L6-v2 → ChromaDB persistente (./chroma_db_ragas)
-    </div>
-  </div>
-  <div class="flecha">▼</div>
-  <div class="fase">
-    <div class="fase-titulo">FASE 2 — INFERENCIA RAG (online, por cada pregunta)</div>
-    <div class="fase-pasos">
-      Pregunta → Embedding → ChromaDB busca los 4 chunks más similares<br>
-      → Construcción de prompt aumentado (contexto + pregunta)<br>
-      → Llama 3.1 8B (vía Groq) → Respuesta
-    </div>
-  </div>
-  <div class="flecha">▼</div>
-  <div class="fase">
-    <div class="fase-titulo">FASE 3 — EVALUACIÓN AUTOMÁTICA</div>
-    <div class="fase-pasos">
-      Dataset {pregunta, respuesta, contexto, ground_truth}<br>
-      → RAGAS evaluate() → Faithfulness, Answer Relevancy, Context Precision<br>
-      → Análisis crítico por pregunta (LLM) → resultados_evaluacion.md
-    </div>
-  </div>
-</div>
 
 <!-- ========== 4. MARCO TEÓRICO ========== -->
 <h2 id="marco-teorico" class="section-break">4. Marco teórico</h2>
@@ -493,9 +469,7 @@ El proyecto se materializa en un único script Python autónomo (<code>evaluacio
 La versión inicial del proyecto utilizaba <code>gemini-flash-latest</code> de Google como LLM. Durante el desarrollo se evidenció que la capa gratuita de Gemini impone restricciones severas: <strong>cinco solicitudes por minuto</strong> y un límite diario de tokens insuficiente para correr la evaluación completa de RAGAS, que dispara aproximadamente 40 llamadas al LLM (8 inferencias + 24 evaluaciones + 8 análisis críticos). Una sola corrida del script consumía la cuota diaria y arrojaba errores <code>429 ResourceExhausted</code> a la mitad del proceso.
 </p>
 
-<div class="hallazgo">
-  <strong>Hallazgo clave.</strong> La migración del proveedor de LLM no fue una decisión cosmética sino estructural: sin ella, la evaluación con RAGAS resultaba inviable en el nivel gratuito.
-</div>
+
 
 <p>
 La solución consistió en migrar a <strong>Groq</strong> usando <code>llama-3.1-8b-instant</code>. Los beneficios concretos fueron:
@@ -608,17 +582,11 @@ El valor más bajo de las tres métricas. Un Context Precision de 0.30 indica qu
 <!-- ========== 8. HALLAZGOS ========== -->
 <h2 id="hallazgos">8. Hallazgos y discusión</h2>
 
-<div class="hallazgo">
-  <strong>Hallazgo 1.</strong> La calidad del retriever (Context Precision) es la mayor oportunidad de mejora del sistema. El cuello de botella no está en el LLM sino en cómo se buscan los fragmentos relevantes.
-</div>
 
-<div class="hallazgo">
-  <strong>Hallazgo 2.</strong> El uso de un LLM en español como juez (RAGAS) sobre embeddings entrenados en inglés produce una asimetría: el sistema entiende bien al evaluar, pero recupera mal.
-</div>
 
-<div class="hallazgo">
-  <strong>Hallazgo 3.</strong> Las preguntas trampa (categoría D) muestran que el prompt aumentado mitiga eficazmente la alucinación cuando se incluye explícitamente la instrucción <em>"si no sabes la respuesta, di que no se encuentra en el contexto"</em>.
-</div>
+
+
+
 
 <p>
 La decisión de mantener embeddings locales (en lugar de migrarlos también a un proveedor remoto) responde a un compromiso entre calidad y autonomía operativa: el modelo local nunca falla por rate limits ni consume cuota de API. Para un proyecto con preguntas mayoritariamente en español, este compromiso es discutible y debe revisarse en versiones futuras.
@@ -657,64 +625,15 @@ Como <strong>trabajo futuro</strong> se recomienda:
   <li>Migrar la construcción del dataset a la API moderna de RAGAS (<code>EvaluationDataset.from_list()</code>) en lugar del wrapper de HuggingFace Datasets, que está marcado como obsoleto.</li>
 </ol>
 
-<!-- ========== 11. GLOSARIO ========== -->
-<h2 id="glosario" class="section-break">11. Glosario</h2>
-
-<table>
-  <thead><tr><th>Término</th><th>Definición</th></tr></thead>
-  <tbody>
-    <tr><td><strong>API Key</strong></td><td>Credencial secreta que autoriza el acceso a una API remota (en este proyecto, Groq).</td></tr>
-    <tr><td><strong>Chunk</strong></td><td>Fragmento de un documento dividido en porciones manejables para su procesamiento.</td></tr>
-    <tr><td><strong>Embedding</strong></td><td>Vector numérico que representa el significado de un texto.</td></tr>
-    <tr><td><strong>Ground truth</strong></td><td>Respuesta de referencia considerada correcta, usada para comparar contra la salida del sistema.</td></tr>
-    <tr><td><strong>LLM</strong></td><td>"Large Language Model" — modelo de IA entrenado para generar y comprender texto.</td></tr>
-    <tr><td><strong>RAG</strong></td><td>"Retrieval-Augmented Generation" — patrón que combina búsqueda de información y generación con un LLM.</td></tr>
-    <tr><td><strong>Retriever</strong></td><td>Componente del pipeline que busca los fragmentos más relevantes para una consulta.</td></tr>
-    <tr><td><strong>Similitud coseno</strong></td><td>Medida matemática del ángulo entre dos vectores; aquí, qué tan parecidos son dos textos.</td></tr>
-  </tbody>
-</table>
-
-<!-- ========== 12. REFERENCIAS ========== -->
-<h2 id="referencias">12. Referencias</h2>
+<!-- ========== 11. REFERENCIAS ========== -->
+<h2 id="referencias">11. Referencias</h2>
 
 <p style="text-indent: -2em; padding-left: 2em;">
-EvoAcademy. (2024, 18 de octubre). <em>¿Qué es RAG? - Clase con código y ejemplo</em> [Video]. YouTube. <a href="https://youtu.be/uAsd9pOIcLg">https://youtu.be/uAsd9pOIcLg</a>
-</p>
-
-<p style="text-indent: -2em; padding-left: 2em;">
-Brown, T. B., Mann, B., Ryder, N., Subbiah, M., Kaplan, J., Dhariwal, P., et al. (2020). Language models are few-shot learners. <em>Advances in Neural Information Processing Systems, 33</em>, 1877–1901. <a href="https://arxiv.org/abs/2005.14165">https://arxiv.org/abs/2005.14165</a>
-</p>
-
-<p style="text-indent: -2em; padding-left: 2em;">
-Chroma. (2024). <em>Chroma documentation</em>. <a href="https://docs.trychroma.com">https://docs.trychroma.com</a>
-</p>
-
-<p style="text-indent: -2em; padding-left: 2em;">
-Devlin, J., Chang, M.-W., Lee, K., & Toutanova, K. (2019). BERT: Pre-training of deep bidirectional transformers for language understanding. En <em>Proceedings of the 2019 Conference of the North American Chapter of the Association for Computational Linguistics</em> (pp. 4171–4186). ACL. <a href="https://arxiv.org/abs/1810.04805">https://arxiv.org/abs/1810.04805</a>
-</p>
-
-<p style="text-indent: -2em; padding-left: 2em;">
-Es, S., James, J., Anke, L. E., & Schockaert, S. (2023). RAGAs: Automated evaluation of retrieval augmented generation. <em>arXiv preprint</em>. <a href="https://arxiv.org/abs/2309.15217">https://arxiv.org/abs/2309.15217</a>
-</p>
-
-<p style="text-indent: -2em; padding-left: 2em;">
-Gao, Y., Xiong, Y., Gao, X., Jia, K., Pan, J., Bi, Y., Dai, Y., Sun, J., & Wang, H. (2023). Retrieval-augmented generation for large language models: A survey. <em>arXiv preprint</em>. <a href="https://arxiv.org/abs/2312.10997">https://arxiv.org/abs/2312.10997</a>
-</p>
-
-<p style="text-indent: -2em; padding-left: 2em;">
-Groq. (2024). <em>Groq API documentation</em>. <a href="https://console.groq.com/docs">https://console.groq.com/docs</a>
-</p>
-
-<p style="text-indent: -2em; padding-left: 2em;">
-LangChain. (2024). <em>LangChain documentation</em>. <a href="https://python.langchain.com/docs/">https://python.langchain.com/docs/</a>
+EvoAcademy. (2024, 18 de octubre). <em>¿Qué es RAG? - Clase con código y ejemplo</em> [Video]. YouTube. <a href="https://youtu.be/uAsd9pOIcLg?si=3jJluOxEcQ306DVZ">https://youtu.be/uAsd9pOIcLg?si=3jJluOxEcQ306DVZ</a>
 </p>
 
 <p style="text-indent: -2em; padding-left: 2em;">
 Lewis, P., Perez, E., Piktus, A., Petroni, F., Karpukhin, V., Goyal, N., et al. (2020). Retrieval-augmented generation for knowledge-intensive NLP tasks. <em>Advances in Neural Information Processing Systems, 33</em>, 9459–9474. <a href="https://arxiv.org/abs/2005.11401">https://arxiv.org/abs/2005.11401</a>
-</p>
-
-<p style="text-indent: -2em; padding-left: 2em;">
-Touvron, H., Martin, L., Stone, K., Albert, P., et al. (2023). Llama 2: Open foundation and fine-tuned chat models. <em>arXiv preprint</em>. <a href="https://arxiv.org/abs/2307.09288">https://arxiv.org/abs/2307.09288</a>
 </p>
 
 <hr>
@@ -725,3 +644,6 @@ Código fuente disponible en: <a href="https://github.com/Landrea28/DesarrolloDe
 
 </body>
 </html>
+
+
+

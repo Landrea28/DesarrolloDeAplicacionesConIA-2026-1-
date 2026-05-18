@@ -11,3 +11,6 @@ chroma_db_ragas/
 # Archivos temporales de Python
 __pycache__/
 *.pyc
+
+
+
