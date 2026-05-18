@@ -16,10 +16,10 @@ def load_documents():
     documents.extend(pdf_loader.load())
     
     # Cargar TXTs o MDs
-    text_loader = DirectoryLoader(DOCS_DIR, glob="**/*.md", loader_cls=TextLoader)
+    text_loader = DirectoryLoader(DOCS_DIR, glob="**/*.md", loader_cls=TextLoader, loader_kwargs={'encoding': 'utf-8'})
     documents.extend(text_loader.load())
     
-    text_loader2 = DirectoryLoader(DOCS_DIR, glob="**/*.txt", loader_cls=TextLoader)
+    text_loader2 = DirectoryLoader(DOCS_DIR, glob="**/*.txt", loader_cls=TextLoader, loader_kwargs={'encoding': 'utf-8'})
     documents.extend(text_loader2.load())
     
     print(f"Se cargaron {len(documents)} documentos.")

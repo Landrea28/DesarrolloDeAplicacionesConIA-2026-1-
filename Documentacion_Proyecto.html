@@ -1,0 +1,313 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Documentación Oficial: Asistente RAG de Ciberseguridad</title>
+    <style>
+        /* Estilos sobrios, académicos y profesionales tipo APA */
+        body {
+            font-family: 'Times New Roman', Times, serif;
+            line-height: 1.8;
+            color: #000000;
+            background-color: #ffffff;
+            margin: 0;
+            padding: 40px;
+            max-width: 850px;
+            margin-left: auto;
+            margin-right: auto;
+        }
+
+        /* Portada */
+        .cover-page {
+            text-align: center;
+            min-height: 90vh;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            page-break-after: always;
+        }
+
+        .cover-page h1 {
+            font-size: 22px;
+            font-weight: bold;
+            margin-bottom: 60px;
+            border: none;
+            padding: 0;
+        }
+
+        .cover-page p {
+            font-size: 16px;
+            margin: 10px 0;
+        }
+
+        /* Tipografía general */
+        h1, h2, h3, h4 {
+            font-weight: bold;
+            color: #000000;
+        }
+
+        h2 {
+            font-size: 18px;
+            margin-top: 2.5em;
+            margin-bottom: 1em;
+            border-bottom: 1px solid #000000;
+            padding-bottom: 5px;
+        }
+
+        h3 {
+            font-size: 16px;
+            margin-top: 1.5em;
+        }
+
+        p {
+            text-align: justify;
+            margin-bottom: 1.2em;
+        }
+
+        /* Tabla de contenido */
+        .toc {
+            margin: 3em 0;
+            page-break-after: always;
+        }
+
+        .toc h2 {
+            border: none;
+            text-align: center;
+        }
+
+        .toc ul {
+            list-style-type: none;
+            padding-left: 0;
+        }
+
+        .toc ul ul {
+            padding-left: 25px;
+        }
+
+        .toc a {
+            text-decoration: none;
+            color: #000000;
+        }
+
+        .toc a:hover {
+            text-decoration: underline;
+        }
+
+        /* Elementos de lista y código */
+        ul, ol {
+            margin-bottom: 1.5em;
+        }
+
+        code {
+            font-family: 'Courier New', Courier, monospace;
+            font-size: 0.95em;
+        }
+
+        /* Evidencias */
+        .evidencia {
+            text-align: center;
+            margin-top: 30px;
+            margin-bottom: 40px;
+        }
+
+        .evidencia img {
+            max-width: 100%;
+            height: auto;
+            border: 1px solid #000000;
+            margin-bottom: 10px;
+        }
+
+        .evidencia p {
+            text-align: center;
+            font-size: 0.9em;
+            font-style: italic;
+            margin: 0;
+        }
+    </style>
+</head>
+<body>
+
+    <!-- PORTADA TIPO APA -->
+    <div class="cover-page">
+        <h1>Proyecto: Asistente RAG de Ciberseguridad</h1>
+        
+        <p>Lina Andrea Bello Ballen</p>
+        <p>Facultad de Ingeniería y Matemáticas</p>
+        <p>Ingeniería de Sistemas</p>
+        <p>Bogotá, Colombia</p>
+        <p>17 de mayo de 2026</p>
+    </div>
+
+    <!-- TABLA DE CONTENIDO -->
+    <div class="toc">
+        <h2>Tabla de Contenido</h2>
+        <ul>
+            <li><a href="#sec-1">1. Introducción y planteamiento del problema</a></li>
+            <li><a href="#sec-2">2. Glosario</a></li>
+            <li><a href="#sec-3">3. Tecnologías del sistema</a></li>
+            <li><a href="#sec-4">4. Herramientas</a></li>
+            <li><a href="#sec-5">5. Arquitectura y Componentes Implementados</a></li>
+            <li><a href="#sec-6">6. Marco teórico</a>
+                <ul>
+                    <li><a href="#sec-6-1">6.1 RAG: Generación Aumentada por Recuperación</a></li>
+                    <li><a href="#sec-6-2">6.2 Embeddings y representación semántica</a></li>
+                    <li><a href="#sec-6-3">6.3 RAGAS y sus métricas</a></li>
+                </ul>
+            </li>
+            <li><a href="#sec-7">7. Metodología de evaluación</a></li>
+            <li><a href="#sec-8">8. Implementación</a>
+                <ul>
+                    <li><a href="#sec-8-1">8.1 Migración a Groq</a></li>
+                </ul>
+            </li>
+            <li><a href="#sec-9">9. Resultados</a></li>
+            <li><a href="#sec-10">10. Hallazgos y discusión</a></li>
+            <li><a href="#sec-11">11. Limitaciones</a></li>
+            <li><a href="#sec-12">12. Evidencias</a></li>
+            <li><a href="#sec-13">13. Conclusiones y trabajo futuro</a></li>
+        </ul>
+    </div>
+
+    <!-- CONTENIDO DEL DOCUMENTO -->
+    <h2 id="sec-1">1. Introducción y planteamiento del problema</h2>
+    <p>Repo de GitHub: <a href="https://github.com/Landrea28/DesarrolloDeAplicacionesConIA-2026-1-/tree/ProyectoFinal" target="_blank">https://github.com/Landrea28/DesarrolloDeAplicacionesConIA-2026-1-/tree/ProyectoFinal</a></p>
+    <p>
+        El presente proyecto desarrolla un Asistente RAG (Retrieval-Augmented Generation) enfocado en ciberseguridad, diseñado para solucionar la ineficiencia en la búsqueda manual de información técnica. Al aprovechar una base de datos vectorial local y modelos de Inteligencia Artificial generativa, el sistema ingesta extensas normativas y manuales privados para emitir clasificaciones y respuestas estructuradas y precisas. Esto minimiza el riesgo de "alucinaciones" inherente a los modelos comerciales, optimizando el tiempo de respuesta de los analistas frente a incidentes críticos de seguridad.
+    </p>
+
+    <h2 id="sec-2">2. Glosario</h2>
+    <ul>
+        <li><strong>API (Interfaz de Programación de Aplicaciones):</strong> Puente de conexión para consumir los servicios externos del modelo de lenguaje.</li>
+        <li><strong>Embedding:</strong> Vector matemático que representa la intención o significado semántico de un texto humano.</li>
+        <li><strong>FAISS:</strong> Base de datos vectorial optimizada para hallar la cercanía o similitud matemática entre múltiples vectores.</li>
+        <li><strong>LPU (Language Processing Unit):</strong> Hardware especializado que acelera dramáticamente la inferencia de inteligencia artificial respecto a las GPUs tradicionales.</li>
+        <li><strong>RAG (Retrieval-Augmented Generation):</strong> Metodología donde un modelo lee contexto extraído de una base documental propia antes de formular su respuesta.</li>
+    </ul>
+
+    <h2 id="sec-3">3. Tecnologías del sistema</h2>
+    <p>El núcleo del sistema está construido sobre las siguientes tecnologías y librerías especializadas:</p>
+    <ul>
+        <li><strong>Python 3:</strong> Lenguaje de programación principal que sirve como motor orquestador del proyecto.</li>
+        <li><strong>LangChain:</strong> Framework base empleado para la orquestación, integración de componentes RAG, división de textos y construcción de cadenas de prompts.</li>
+        <li><strong>Groq Cloud API:</strong> Infraestructura en la nube y proveedor del LLM principal (<code>llama-3.3-70b-versatile</code>), utilizado para la generación de respuestas en formato estructurado (JSON).</li>
+        <li><strong>HuggingFace Embeddings:</strong> Librería de IA utilizada para desplegar el modelo neuronal local <code>all-MiniLM-L6-v2</code>, responsable de la vectorización semántica de los textos.</li>
+        <li><strong>FAISS (Facebook AI Similarity Search):</strong> Base de datos vectorial local enfocada en alta concurrencia y baja latencia para el almacenamiento y búsqueda de los embeddings generados.</li>
+    </ul>
+
+    <h2 id="sec-4">4. Herramientas</h2>
+    <p>Para el desarrollo, depuración y despliegue del proyecto, se emplearon las siguientes herramientas de apoyo:</p>
+    <ul>
+        <li><strong>Entorno Virtual (venv):</strong> Herramienta nativa de Python empleada para el aislamiento de dependencias de software.</li>
+        <li><strong>Git y GitHub:</strong> Sistema de control de versiones y plataforma de alojamiento para gestionar el código fuente colaborativamente.</li>
+        <li><strong>Visual Studio Code / Cursor:</strong> Entornos de Desarrollo Integrado (IDEs) utilizados para la redacción y perfilamiento del código.</li>
+        <li><strong>Terminal de Comandos:</strong> CMD / PowerShell (Windows) y Bash (Unix) para la ejecución secuencial de los scripts de ingesta e inferencia.</li>
+    </ul>
+
+    <h2 id="sec-5">5. Arquitectura y Componentes Implementados</h2>
+    <p>Para cumplir con los más altos estándares de ingeniería, el <em>pipeline</em> consta de dos grandes subsistemas asíncronos apoyados en componentes técnicos altamente acoplados:</p>
+    
+    <h3>A. Subsistema de Ingestión (<code>ingest.py</code>)</h3>
+    <ul>
+        <li><strong>Document Loaders (<code>PyPDFLoader</code> y <code>TextLoader</code>):</strong> Componentes encargados de parsear el sistema de archivos local (<code>docs/</code>) para extraer el texto crudo de manuales en PDF y archivos Markdown/TXT de forma dinámica.</li>
+        <li><strong>Text Splitter (<code>RecursiveCharacterTextSplitter</code>):</strong> Divide los documentos largos en fragmentos manejables de 1000 caracteres, aplicando un <code>chunk_overlap</code> de 200 caracteres para asegurar que no se pierda contexto semántico entre cortes de párrafos continuos.</li>
+        <li><strong>Modelo de Embeddings (<code>HuggingFaceEmbeddings</code>):</strong> Instancia del modelo <code>all-MiniLM-L6-v2</code> que se ejecuta 100% de manera local, transformando cada "chunk" en un vector denso.</li>
+        <li><strong>Vector Store (<code>FAISS</code>):</strong> Base de datos vectorial que recibe los vectores generados, los indexa matemáticamente y los persiste localmente en el disco duro (directorio <code>db/</code>).</li>
+    </ul>
+
+    <h3>B. Subsistema de Inferencia y Chat (<code>_init_.py</code>)</h3>
+    <ul>
+        <li><strong>Retriever (Recuperador Contextual):</strong> Utiliza el algoritmo de búsqueda de similitud de FAISS. Al recibir la consulta del analista, evalúa distancias vectoriales y retorna los 3 fragmentos de texto (k=3) más relevantes a la problemática.</li>
+        <li><strong>Prompt Engineering (Ensamblador):</strong> Módulo que construye dinámicamente el "System Prompt" combinando: las directrices base del modelo, los fragmentos recuperados, el historial en memoria de corto plazo y la consulta en turno.</li>
+        <li><strong>Motor LLM (Groq API):</strong> Actúa como el motor inferencial delegando la tarea de generación analítica al modelo en LPUs, garantizando velocidad y exactitud.</li>
+        <li><strong>Controlador de Salida Estructurada:</strong> Implementación que fuerza y condiciona al LLM (vía <code>response_format={"type": "json_object"}</code>) a devolver un objeto rígido. Este módulo asegura un esquema ordenado e interoperable (tema principal, estado de la solicitud y respuesta técnica).</li>
+    </ul>
+
+    <h2 id="sec-6">6. Marco teórico</h2>
+    
+    <h3 id="sec-6-1">6.1 RAG: Generación Aumentada por Recuperación</h3>
+    <p>
+        RAG es un paradigma de IA que mitiga la falta de conocimiento actualizado de los Modelos de Lenguaje Grandes (LLMs). Funciona acoplando un motor de búsqueda sobre una base de conocimiento privada. En lugar de forzar a la IA a contestar desde sus datos de entrenamiento estáticos, el sistema primero recupera la literatura relevante en tiempo real y condiciona al modelo a razonar exclusivamente sobre ella.
+    </p>
+
+    <h3 id="sec-6-2">6.2 Embeddings y representación semántica</h3>
+    <p>
+        Un embedding es la traducción de un texto en un vector de alta dimensionalidad. Las redes neuronales sitúan conceptos afines cerca uno del otro en este espacio matemático. Por ejemplo, "fallo de red" y "problemas de conectividad" compartirán proximidad vectorial. Esto habilita búsquedas por intención o significado, superando las limitaciones de la búsqueda tradicional por palabras clave.
+    </p>
+
+    <h3 id="sec-6-3">6.3 RAGAS y sus métricas</h3>
+    <p>
+        Para validar la efectividad del RAG, se emplean los principios del marco RAGAS (RAG Assessment), evaluando pilares como: la Fidelidad (si la respuesta proviene estrictamente de los documentos y carece de invenciones), la Relevancia de Respuesta (si contesta exactamente lo que se preguntó), y la Precisión del Contexto (si los archivos extraídos por la base de datos realmente contienen la respuesta buscada).
+    </p>
+
+    <h2 id="sec-7">7. Metodología de evaluación</h2>
+    <p>
+        La evaluación del sistema durante su desarrollo se realizó a través de un esquema Few-Shot Prompting, midiendo de manera empírica la capacidad del asistente para respetar el formato JSON estricto. Se simularon escenarios típicos de un Centro de Operaciones de Seguridad (SOC) comprobando la taxonomía de la respuesta y la exactitud del motor vectorial frente a comandos confusos o ambiguos del usuario.
+    </p>
+
+    <h2 id="sec-8">8. Implementación</h2>
+    <p>
+        El código fue desarrollado bajo una arquitectura modular. Un script independiente (<code>ingest.py</code>) absorbe el coste computacional de generar los embeddings de la documentación, aislándolo de la latencia del chat. El núcleo interactivo reside en <code>_init_.py</code>, donde se despliega un bucle de retención de estados diseñado para mantener el hilo de la conversación y parsear las excepciones del formato JSON.
+    </p>
+
+    <h3 id="sec-8-1">8.1 Migración a Groq</h3>
+    <p>
+        La arquitectura inicial planteaba un uso centralizado mediante APIs comerciales convencionales. Para aumentar la privacidad y el control, se migró inicialmente al ecosistema local (Ollama). Sin embargo, esto generó cuellos de botella de memoria RAM. La refactorización definitiva implementó la API de Groq, trasladando el peso de la inferencia a LPUs ultrarrápidas, mientras el alojamiento de los documentos confidenciales, los vectores y las búsquedas semánticas se mantuvieron firmemente bajo un esquema 100% local.
+    </p>
+
+    <h2 id="sec-9">9. Resultados</h2>
+    <p>
+        El asistente demostró un tiempo de respuesta <em>end-to-end</em> significativamente optimizado. Las pruebas con consultas de redes y vulnerabilidades fueron clasificadas correctamente bajo la taxonomía de ciberseguridad esperada. Además, la estructura de salida JSON fue robusta a lo largo de las iteraciones, permitiendo la escalabilidad e interoperabilidad con futuras interfaces gráficas.
+    </p>
+
+    <h2 id="sec-10">10. Hallazgos y discusión</h2>
+    <p>
+        Durante el desarrollo se evidenció que la segmentación de documentos con superposición (<code>chunk_overlap</code>) es de vital importancia; sin ella, conceptos clave partidos a la mitad provocan pérdida de contexto semántico. Adicionalmente, el traslado de la carga inferencial a Groq comprobó que el verdadero limitante de rendimiento en arquitecturas RAG no es la base de datos vectorial local, sino la latencia en la generación de <em>tokens</em>.
+    </p>
+
+    <h2 id="sec-11">11. Limitaciones</h2>
+    <ul>
+        <li><strong>Ventana de Contexto:</strong> Consultas excesivamente amplias que extraigan demasiados documentos pueden saturar la capacidad de memoria temporal del <em>System Prompt</em>, degradando el razonamiento del LLM.</li>
+        <li><strong>Dependencia de Red:</strong> Aunque los documentos corporativos residen offline y se buscan localmente, la generación del lenguaje está atada a la estabilidad de la conexión con la API de Groq.</li>
+        <li><strong>Formatos visuales:</strong> El procesamiento actual se basa en la extracción de texto plano, siendo incapaz de interpretar de manera eficiente topologías de red o gráficas insertadas en los manuales PDF.</li>
+    </ul>
+
+    <h2 id="sec-12">12. Evidencias</h2>
+    <p>
+        A continuación, se presentan las capturas correspondientes al funcionamiento final y estabilizado del proyecto en el entorno de desarrollo:
+    </p>
+
+    <div class="evidencia">
+        <img src="imagenes/inferencia.png" alt="Evidencia del asistente RAG respondiendo al usuario">
+        <p><strong>Figura 1.</strong> Interacción con el asistente principal (<code>_init_.py</code>). Se observa la recepción de la consulta del analista, la búsqueda en la documentación y la respuesta estructurada del modelo LLM cumpliendo estrictamente con el formato JSON condicionado.</p>
+    </div>
+
+    <h3>Opinión personal sobre los resultados</h3>
+    <p>
+        Como podemos observar en los resultados, para esta entrega final migramos de Ollama a Groq. Inicialmente usamos el modelo local, pero consumía demasiados recursos y, al no contar con una tarjeta gráfica dedicada, el rendimiento era muy lento. En un punto intentamos usar Gemini, pero también tardaba bastante en responder y presentaba problemas al cargar contextos muy extensos. Por esta razón nos decidimos por Groq, que ofrece una excelente capacidad de tokens gratuitos y un rendimiento que resultó ideal para el proyecto.
+    </p>
+    <p>
+        Durante las pruebas validamos su comportamiento fuera de contexto: al preguntarle sobre elefantes, el modelo respondió claramente que no existía información relacionada en la documentación. Esto demuestra que no está inventando datos (alucinaciones) y que realmente responde con base en los archivos cargados.
+    </p>
+    <p>
+        Por otro lado, cuando le preguntamos sobre hackers de sombrero blanco, el sistema identificó que era un tema de ciberseguridad porque los manuales subidos hablan sobre los distintos perfiles de hackers. Como la pregunta fue muy concreta, la respuesta generada fue igualmente clara y al punto.
+    </p>
+    <p>
+        Finalmente, al hacer una prueba preguntando por "Man in the Middle" usando solo sus iniciales y sin mucho contexto, el modelo logró relacionarlo con la ciberseguridad. Sin embargo, dada la ambigüedad de la consulta, el sistema pidió una aclaración adicional solicitando más detalles. Esto evidencia que el asistente prefiere asegurarse de entender la intención del usuario antes de dar una respuesta equivocada.
+    </p>
+
+    <h2 id="sec-13">13. Conclusiones y trabajo futuro</h2>
+    <p>
+        La implementación del Asistente RAG para Ciberseguridad ha validado ser una solución robusta para la reducción de fricción operativa en el acceso dinámico al conocimiento interno. El formato determinista JSON asegura que el sistema sea agnóstico e interconectable. 
+    </p>
+    <p>
+        Como trabajo futuro, se proyecta:
+    </p>
+    <ul>
+        <li>Desplegar una Interfaz Gráfica de Usuario (GUI) interactiva utilizando tecnologías como Streamlit o arquitecturas web modernas.</li>
+        <li>Soportar ingesta multimodal (Visión Artificial) para integrar gráficos y diagramas de arquitectura de red presentes en los manuales técnicos.</li>
+        <li>Automatizar validaciones RAGAS en un <em>pipeline</em> de integración continua para medir sistemáticamente la fidelidad de las respuestas ante cada actualización de la base documental.</li>
+    </ul>
+
+</body>
+</html>

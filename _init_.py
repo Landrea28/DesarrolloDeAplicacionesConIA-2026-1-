@@ -1,6 +1,7 @@
 import os
 import json
-import ollama
+import sys
+from groq import Groq
 from dotenv import load_dotenv
 from langchain_community.vectorstores import FAISS
 from langchain_huggingface import HuggingFaceEmbeddings
@@ -8,7 +9,14 @@ from langchain_huggingface import HuggingFaceEmbeddings
 load_dotenv()  # Load environment variables from .env file
 
 DB_DIR = "db"
-OLLAMA_MODEL = "mistral" # Puedes cambiar esto por "llama3" u otro que tengas instalado en ollama
+GROQ_MODEL = "llama-3.3-70b-versatile"
+
+# Initialize Groq client
+if not os.getenv("GROQ_API_KEY"):
+  print("Error: La variable de entorno GROQ_API_KEY no esta configurada en el archivo .env")
+  sys.exit(1)
+
+client = Groq(api_key=os.getenv("GROQ_API_KEY"))
 
 SYSTEM_PROMPT = """
 [task]
@@ -96,12 +104,16 @@ def build_prompt(history: list[dict[str, str]], user_text: str, context: str) ->
 
 def generate_support_response(prompt: str) -> str:
   try:
-    response = ollama.generate(model=OLLAMA_MODEL, prompt=prompt, format='json')
-    return response['response'].strip()
+    completion = client.chat.completions.create(
+      model=GROQ_MODEL,
+      messages=[{"role": "user", "content": prompt}],
+      response_format={"type": "json_object"},
+      temperature=0.2,
+    )
+    return completion.choices[0].message.content.strip()
   except Exception as e:
-    print(f"Error comunicandose con Ollama: {e}")
-    print("Asegurate de que Ollama esta corriendo (ollama run mistral)")
-    return '{"tema_principal": "otro", "estado": "requiere_aclaracion", "respuesta": "Error de conexion con modelo local."}'
+    print(f"Error comunicandose con Groq: {e}")
+    return '{"tema_principal": "otro", "estado": "requiere_aclaracion", "respuesta": "Error de conexion con el modelo de Groq."}'
 
 
 def format_output_for_console(raw_text: str) -> str:
@@ -127,7 +139,7 @@ def main() -> None:
   if not vector_store:
     return
 
-  print(f"Asistente RAG de Ciberseguridad (Local con {OLLAMA_MODEL}) iniciado.")
+  print(f"Asistente RAG de Ciberseguridad (Groq con {GROQ_MODEL}) iniciado.")
   print("Escribe tu consulta. Cuando quieras terminar, escribe 'salir'.")
 
   history: list[dict[str, str]] = []
