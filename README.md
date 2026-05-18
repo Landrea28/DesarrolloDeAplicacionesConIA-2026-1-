@@ -2,14 +2,14 @@
 
 > Pipeline RAG (Retrieval-Augmented Generation) que responde preguntas sobre programas de asignatura en PDF y evalúa la calidad de las respuestas con métricas automáticas.
 
-> 🪸 Esta documentación corresponde a la rama **`RAG`** del repositorio.
+> Esta documentación corresponde a la rama **`RAG`** del repositorio.
 
 ---
 
-## 📑 Contenido
+## Contenido
 
-1. [Qué hace el proyecto](#1-qué-hace-el-proyecto)
-2. [Glosario](#2-glosario-rápido)
+1. [Descripción General](#1-descripción-general)
+2. [Glosario de Términos](#2-glosario-de-términos)
 3. [Tecnologías](#3-tecnologías)
 4. [Estructura del proyecto](#4-estructura-del-proyecto)
 5. [Arquitectura](#5-arquitectura)
@@ -18,24 +18,24 @@
 8. [Obtener la API Key de Groq](#8-obtener-la-api-key-de-groq)
 9. [Cómo funciona internamente](#9-cómo-funciona-internamente)
 10. [Resultados y métricas](#10-resultados-y-métricas)
-11. [Errores comunes](#11-errores-comunes)
+11. [Solución de Problemas](#11-solución-de-problemas)
 12. [Seguridad de credenciales](#12-seguridad-de-credenciales)
 13. [Checklist de soporte](#13-checklist-de-soporte)
 14. [Autoría](#14-autoría)
 
 ---
 
-## 1. Qué hace el proyecto
+## 1. Descripción General
 
 Lee los PDFs de `docs/`, los convierte en vectores numéricos, los almacena en una base vectorial local (ChromaDB) y permite responder preguntas en lenguaje natural usando un LLM (Llama 3.1 vía Groq). Finalmente, evalúa la calidad de cada respuesta con el framework **RAGAS**.
 
-**Problema que resuelve:** los LLMs no conocen documentos privados. RAG les "enseña" temporalmente a leerlos para responder sin inventar información.
+**Problema que resuelve:** Los modelos de lenguaje grandes (LLMs) carecen de conocimiento sobre datos privados o recientes. La arquitectura RAG proporciona el contexto necesario de forma dinámica, mitigando la generación de información falsa (alucinaciones) y garantizando respuestas basadas en fuentes confiables.
 
 ---
 
-## 2. Glosario
+## 2. Glosario de Términos
 
-| Término | Qué es |
+| Término | Definición |
 |---|---|
 | **API Key** | Credencial secreta que autoriza llamadas a un servicio (aquí, Groq). |
 | **Variable de entorno** | Valor de configuración que vive fuera del código, en el archivo `.env`. |
@@ -71,8 +71,8 @@ DesarrolloDeAplicacionesConIA-2026-1-/
 ├── docs/                          # PDFs de los programas de asignatura
 ├── env/                           # Entorno virtual (local, no se sube)
 ├── chroma_db_ragas/               # Base vectorial (se genera al ejecutar)
-├── evaluacion_ragas.py            # ⭐ Script principal
-├── .env                           # Credenciales (tú lo creas, NO se sube)
+├── evaluacion_ragas.py            # Script principal
+├── .env                           # Credenciales (creado por el usuario, excluido del repositorio)
 ├── .gitignore                     # Exclusiones de Git
 ├── README.md                      # Esta documentación
 └── resultados_evaluacion.md       # Se genera al terminar la evaluación
@@ -80,10 +80,10 @@ DesarrolloDeAplicacionesConIA-2026-1-/
 
 | Archivo / Carpeta | ¿Modificable? |
 |---|---|
-| `docs/` | ✅ Sí — añade o quita PDFs. Borra `chroma_db_ragas/` después para reindexar. |
-| `.env` | ✅ Sí — aquí van tus credenciales. **Nunca lo subas al repo.** |
-| `evaluacion_ragas.py` | ⚠️ Con cuidado — es el núcleo. |
-| `env/` y `chroma_db_ragas/` | ❌ No — se generan automáticamente. |
+| `docs/` | Sí — añade o quita PDFs. Borra `chroma_db_ragas/` después para reindexar. |
+| `.env` | Sí — aquí van tus credenciales. **Nunca lo subas al repo.** |
+| `evaluacion_ragas.py` | Archivo central. Modificar con precaución. |
+| `env/` y `chroma_db_ragas/` | No — se generan automáticamente. |
 
 ---
 
@@ -116,10 +116,10 @@ DesarrolloDeAplicacionesConIA-2026-1-/
 
 | Requisito | Versión | Obligatorio |
 |---|---|---|
-| Python | 3.10+ | ✅ |
-| pip | (viene con Python) | ✅ |
-| Git | cualquiera | ⚠️ Solo si vas a clonar |
-| Cuenta en Groq | gratuita | ✅ |
+| Python | 3.10+ | Sí |
+| pip | (incluido en la instalación de Python) | Sí |
+| Git | cualquiera | Solo si vas a clonar |
+| Cuenta en Groq | gratuita | Sí |
 | Editor de código | cualquiera (VS Code, PyCharm, Sublime, etc.) | Recomendado |
 
 **Verifica qué tienes instalado:**
@@ -138,6 +138,8 @@ pip --version       # debe responder pip x.x.x
 ## 7. Guía de instalación y ejecución
 
 ### 7.1. Obtener el proyecto
+
+**Nota importante:** A la hora de descargar y correr el proyecto, verifica en tu interfaz de clonación o entorno que estás posicionado en la rama del proyecto (`RAG`).
 
 **Opción A — Git CLI:**
 ```bash
@@ -164,7 +166,7 @@ cd ruta/a/DesarrolloDeAplicacionesConIA-2026-1-
 
 **Verificar que estás en la raíz** (Windows: `dir`, macOS/Linux: `ls`). Debes ver `evaluacion_ragas.py` y la carpeta `docs/`.
 
-> 💡 **Atajo:** si abriste el proyecto con "Open Folder" en VS Code y abres la terminal integrada, ya estás en la raíz.
+> **Atajo:** si abriste el proyecto con "Open Folder" en VS Code y abres la terminal integrada, ya estás en la raíz.
 
 ### 7.3. Crear y activar el entorno virtual
 
@@ -181,13 +183,13 @@ python -m venv env
 | Windows (PowerShell) | `.\env\Scripts\Activate.ps1` |
 | macOS / Linux | `source env/bin/activate` |
 
-Sabrás que funcionó porque verás `(env)` al inicio de la línea de la terminal.
+La activación exitosa se confirmará mediante la aparición del prefijo `(env)` en la línea de comandos de su terminal.
 
 > Para desactivarlo: `deactivate`.
 
 ### 7.4. Instalar las dependencias
 
-Con el entorno virtual **activado**, pega este comando en **una sola línea**:
+Con el entorno virtual **activado**, ejecute el siguiente comando:
 
 ```bash
 pip install pandas datasets tabulate ragas langchain-groq langchain-huggingface langchain-chroma langchain-community langchain-text-splitters pypdf python-dotenv sentence-transformers
@@ -206,19 +208,19 @@ pip install pandas datasets tabulate ragas langchain-groq langchain-huggingface 
 | `langchain-community`, `langchain-text-splitters`, `pypdf` | Carga y troceo de PDFs. |
 | `python-dotenv` | Lectura del archivo `.env`. |
 
-Tarda 2-10 min según la conexión. Al final aparecerá `Successfully installed ...`.
+El proceso puede demorar entre 2 y 10 minutos, dependiendo de la velocidad de conexión. Al finalizar, se mostrará el mensaje de confirmación `Successfully installed ...`.
 
 ### 7.5. Crear el archivo `.env`
 
 En la raíz del proyecto, crea un archivo llamado exactamente **`.env`** (con el punto al inicio) y dentro escribe:
 
 ```env
-GROQ_API_KEY=tu_clave_real_de_groq
+GROQ_API_KEY="Your_api_key_here"
 ```
 
-Cómo obtener la clave: ver [sección 8](#8-obtener-la-api-key-de-groq).
+Para obtener la clave de acceso, consulte la [sección 8](#8-obtener-la-api-key-de-groq).
 
-> ⚠️ Si Windows no te deja crear archivos que empiezan con `.`, créalo desde VS Code (`New File` → escribe `.env`) o desde terminal: `type nul > .env` (Windows) / `touch .env` (macOS/Linux).
+> **Advertencia:** Si Windows no te deja crear archivos que empiezan con `.`, créalo desde VS Code (`New File` → escribe `.env`) o desde terminal: `type nul > .env` (Windows) / `touch .env` (macOS/Linux).
 
 ### 7.6. Ejecutar el proyecto
 
@@ -231,7 +233,7 @@ python -u evaluacion_ragas.py
 - `-u` muestra los `print` en tiempo real.
 - Tiempo total estimado: **1 a 3 minutos**.
 
-**Lo verás progresar así:**
+**El progreso de la ejecución se visualizará de la siguiente manera:**
 
 ```
 Inicializando modelos...
@@ -278,12 +280,12 @@ La API Key es la credencial que permite al proyecto comunicarse con el modelo de
 **3. Crear una nueva API Key**
 
 - Haz clic en el botón **"Create API Key"**.
-- Te pedirá un **nombre descriptivo** para la clave (ejemplo: `proyecto-rag`, `evaluacion-ragas`). Sirve solo para que tú sepas para qué la usaste.
+- Se solicitará un **nombre descriptivo** para la clave (ejemplo: `proyecto-rag`, `evaluacion-ragas`) destinado a facilitar su identificación y administración en el panel.
 - Confirma haciendo clic en **"Submit"** o **"Create"**.
 
 **4. Copiar la clave inmediatamente**
 
-> ⚠️ **Importante:** Groq **solo te muestra la clave una vez**. Si cierras la ventana sin copiarla, ya no podrás verla y tendrás que crear otra nueva.
+> **Importante:** Groq **solo te muestra la clave una vez**. Si cierras la ventana sin copiarla, ya no podrás verla y tendrás que crear otra nueva.
 
 - La clave tendrá un formato parecido a: `gsk_xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx`.
 - Cópiala completa con el botón de copiar.
@@ -294,7 +296,7 @@ La API Key es la credencial que permite al proyecto comunicarse con el modelo de
 - Escribe o pega la clave así (sin comillas, sin espacios alrededor del `=`):
 
   ```env
-  GROQ_API_KEY=gsk_xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx
+  GROQ_API_KEY="Your_api_key_here"
   ```
 
 - Guarda el archivo (`Ctrl + S` en la mayoría de editores).
@@ -359,11 +361,11 @@ Al terminar, el script imprime una tabla en consola y guarda los resultados en *
 **Lectura esperada:**
 - Preguntas factuales (Q1-Q4): métricas altas (0.7+).
 - Preguntas que combinan información (Q5-Q6): métricas medias.
-- Preguntas trampa (Q7-Q8): si el sistema responde "no se encuentra en el contexto", **faithfulness se mantiene alta**. Si inventa una respuesta, baja.
+- Preguntas de validación (fuera de contexto) (Q7-Q8): si el sistema responde "no se encuentra en el contexto", **faithfulness se mantiene alta**. Si inventa una respuesta, baja.
 
 ---
 
-## 11. Errores comunes
+## 11. Solución de Problemas
 
 | Síntoma | Causa | Solución |
 |---|---|---|
@@ -383,10 +385,10 @@ Al terminar, el script imprime una tabla en consola y guarda los resultados en *
 
 ## 12. Seguridad de credenciales
 
-- ❌ **Nunca** subas `.env` a Git.
-- ❌ **Nunca** pegues tus API Keys en chats, capturas o foros.
-- ✅ Si una key se filtra: ve a Groq, **revócala** y genera una nueva.
-- ✅ Verifica que `.gitignore` contenga al menos:
+- **Nunca** subas `.env` a Git.
+- **Nunca** pegues tus API Keys en chats, capturas o foros.
+- Si una key se filtra: ve a Groq, **revócala** y genera una nueva.
+- Verifica que `.gitignore` contenga al menos:
   ```
   .env
   env/
