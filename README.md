@@ -315,7 +315,9 @@ Cuando el usuario sube un archivo (PDF, TXT o MD):
 3. **Carga del contenido**:
    - PDFs: `PyPDFLoader` de LangChain (extrae texto página por página).
    - TXT / MD: `TextLoader` con encoding UTF-8.
-4. **División en chunks**: `RecursiveCharacterTextSplitter` con `CHUNK_SIZE = 1000` caracteres y `CHUNK_OVERLAP = 150`. El overlap evita perder contexto en los límites entre chunks.
+4. **División en chunks**: `RecursiveCharacterTextSplitter` con `CHUNK_SIZE = 1000` caracteres y `CHUNK_OVERLAP = 150`. 
+   - **¿Por qué tamaño 1000?** Equivale a unos 200-250 tokens (2 o 3 párrafos de texto). Este es el equilibrio ideal para la ventana de contexto del modelo de embeddings *MiniLM*; permite que cada vector capture una "idea completa" sin diluirse (lo cual pasa si el texto es muy largo) ni perder contexto (si es muy corto).
+   - **¿Por qué overlap de 150?** Representa aproximadamente dos oraciones. Garantiza que si el divisor corta justo en medio de un concepto crítico, el fragmento solapado mantiene la coherencia de la idea en el siguiente chunk sin inflar excesivamente la base de datos.
 
 Implementación: [rag_app/rag_service.py](rag_app/rag_service.py) (`load_documents`, `split_documents`, `build_vector_store`).
 
@@ -372,7 +374,9 @@ Luego, [rag_service.py](rag_app/rag_service.py) (`run_guarded_answer`) parsea el
 - Si `answer_in_context == false` → devuelve la respuesta oficial de sin-contexto.
 - Solo si los tres son `true` se devuelve la respuesta generada por el modelo.
 
-El modelo de Groq usado es `llama-3.1-8b-instant` (configurable con la variable de entorno `GROQ_MODEL`) con `temperature=0.2` y `max_tokens=700` para favorecer respuestas deterministas y concisas.
+El modelo de Groq usado es `llama-3.1-8b-instant` (configurable con la variable de entorno `GROQ_MODEL`).
+- **Configuración del LLM (`temperature=0.2`):** Se eligió deliberadamente una temperatura muy baja para anular la "creatividad" del modelo. En un entorno de ciberseguridad, se requiere que el LLM sea altamente determinista y analítico, garantizando **cero alucinaciones** y forzándolo a apoyarse única y estrictamente en el contexto entregado.
+- **Configuración del LLM (`max_tokens=700`):** Limita la respuesta para asegurar que sea concisa y al grano, evitando la generación de texto redundante.
 
 ### Reglas de seguridad y respuestas oficiales
 

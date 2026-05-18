@@ -981,7 +981,7 @@ code, .mono {
             </div>
             <div class="col-card">
                 <h3>Chunking: 1000 chars · overlap 150</h3>
-                <p style="font-size: 11pt;">El <code>RecursiveCharacterTextSplitter</code> divide el texto en bloques de tamaño fijo con solapamiento, evitando perder contexto en los bordes.</p>
+                <p style="font-size: 11pt;"><strong>¿Por qué 1000?</strong> Equivale a 200-250 tokens (2-3 párrafos). Ideal para que el modelo MiniLM capture una idea completa sin diluir su significado. <br><strong>¿Por qué 150 de overlap?</strong> Rescata un par de oraciones en los bordes para asegurar que las definiciones divididas no pierdan sentido.</p>
                 <div class="chunk-bar">
                     <div class="chunk">Chunk 1</div>
                     <div class="chunk overlap">overlap</div>
