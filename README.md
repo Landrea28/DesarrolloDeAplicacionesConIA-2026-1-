@@ -1,10 +1,10 @@
-# 🛡️ Asistente RAG de Ciberseguridad
+# Asistente RAG de Ciberseguridad
 
 **Un asistente inteligente interactivo impulsado por IA, diseñado para clasificar y responder dudas de ciberseguridad basándose exclusivamente en documentación local y privada.**
 
 ---
 
-## 🚀 1. Guía Rápida de Ejecución
+## 1. Guía Rápida de Ejecución
 
 El sistema opera en **dos fases obligatorias**. Es fundamental realizar la Fase 1 al menos una vez antes de poder iniciar el asistente interactivo (Fase 2).
 
@@ -17,7 +17,7 @@ Este paso convierte tus PDFs y manuales de la carpeta `docs/` en una base de dat
     ```bash
     python ingest.py
     ```
-> **💡 ¿Cuándo usar este comando?:** Solo debes ejecutarlo la primera vez que configuras el proyecto o cada vez que añadas, elimines o modifiques un archivo dentro de la carpeta `docs/`.
+> **¿Cuándo usar este comando?:** Solo debes ejecutarlo la primera vez que configuras el proyecto o cada vez que añadas, elimines o modifiques un archivo dentro de la carpeta `docs/`.
 
 ### Fase 2: Conversar con el Asistente
 Este comando inicia la consola interactiva donde puedes interactuar con el asistente para resolver tus dudas.
@@ -29,7 +29,7 @@ Este comando inicia la consola interactiva donde puedes interactuar con el asist
 2.  Escribe tu consulta cuando aparezca el mensaje `Tu consulta:`. El sistema te devolverá un formato JSON estructurado basado en los documentos leídos.
 3.  Para salir, simplemente escribe la palabra `salir`.
 
-> **💡 ¿Cuándo usar este comando?:** Siempre que quieras encender el chat interactivo para buscar ayuda o consultar la documentación.
+> **¿Cuándo usar este comando?:** Siempre que quieras encender el chat interactivo para buscar ayuda o consultar la documentación.
 
 ---
 
@@ -54,13 +54,13 @@ Antes de proceder con la instalación técnica, asegúrate de contar con lo sigu
 El repositorio está organizado funcionalmente de la siguiente manera:
 
 ```text
-📁 ProyectoFinal/
-├── 📄 _init_.py          # [FASE 2] Archivo principal interactivo (Chat LLM).
-├── 📄 ingest.py          # [FASE 1] Motor de indexación vectorial (Lectura de documentos).
-├── 📁 docs/              # Carpeta para colocar manuales y normativas (.pdf, .md, .txt).
-├── 📁 db/                # (Autogenerada) Almacena la base de datos vectorial local.
-├── 📄 requirements.txt   # Listado estricto de dependencias de Python.
-└── 📄 .env               # Archivo de configuración (creado por ti) para la API Key.
+ProyectoFinal/
+├── _init_.py             # [FASE 2] Archivo principal interactivo (Chat LLM).
+├── ingest.py             # [FASE 1] Motor de indexación vectorial (Lectura de documentos).
+├── docs/                 # Carpeta para colocar manuales y normativas (.pdf, .md, .txt).
+├── db/                   # (Autogenerada) Almacena la base de datos vectorial local.
+├── requirements.txt      # Listado estricto de dependencias de Python.
+└── .env                  # Archivo de configuración (creado por ti) para la API Key.
 ```
 
 ---
@@ -69,7 +69,16 @@ El repositorio está organizado funcionalmente de la siguiente manera:
 
 Sigue estrictamente estos pasos si es la primera vez que configuras el proyecto.
 
-### 5.1 Crear y activar el Entorno Virtual
+### 5.1 Clonar el Repositorio
+Descarga el código fuente a tu máquina local. 
+**Importante:** A la hora de descargar y correr el proyecto, verifica en tu interfaz de clonación (o mediante la terminal con `git branch`) que te encuentres posicionado en la rama correcta del proyecto para evitar inconsistencias y asegurar que tienes la última versión estable.
+
+```bash
+git clone <URL_DEL_REPOSITORIO>
+cd <NOMBRE_DE_LA_CARPETA>
+```
+
+### 5.2 Crear y activar el Entorno Virtual
 Para no causar conflictos con otras librerías en tu sistema operativo, aislaremos el proyecto en un entorno virtual.
 
 *   **Creación del entorno (Windows / macOS / Linux):**
@@ -91,7 +100,7 @@ Para no causar conflictos con otras librerías en tu sistema operativo, aislarem
     ```
 > Si funcionó correctamente, verás un prefijo `(env)` al inicio de la línea de tu terminal.
 
-### 5.2 Instalar las Dependencias
+### 5.3 Instalar las Dependencias
 Con el entorno `(env)` encendido, procede a instalar los componentes del sistema (LangChain, FAISS, Embeddings, Groq, etc.):
 ```bash
 pip install -r requirements.txt
