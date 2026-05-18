@@ -229,7 +229,7 @@ Para poder ejecutar el proyecto, es obligatorio configurar tu API Key de Groq en
 ```env
 GROQ_API_KEY="Your_api_key_here"
 ```
-*(Reemplaza "Your_api_key_here" por la clave real que copiaste)*
+*(Reemplaza "Your_api_key_here" por la clave real que copiaste sin las comillas)*
 
 **Preguntas frecuentes sobre la API Key:**
 
