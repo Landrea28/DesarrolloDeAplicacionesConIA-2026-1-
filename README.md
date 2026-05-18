@@ -28,12 +28,20 @@ Contar la frecuencia de palabras no basta para medir la relevancia de un texto. 
 
 ### Cómo ejecutar el proyecto:
 
-1. Clona el repositorio y asegúrate de tener Python instalado.
-2. (Opcional) Instala las dependencias necesarias. El proyecto utiliza `numpy` y `tabulate`:
+1. Clona el repositorio y navega hasta la carpeta del proyecto en tu terminal. Asegúrate de tener Python instalado.
+2. Crea un entorno virtual para aislar las dependencias del proyecto:
+   ```bash
+   python -m venv env
+   ```
+3. Activa el entorno virtual según tu sistema operativo:
+   *   **En Windows (CMD):** `env\Scripts\activate.bat`
+   *   **En Windows (PowerShell):** `.\env\Scripts\Activate.ps1`
+   *   **En macOS / Linux:** `source env/bin/activate`
+4. Instala las dependencias necesarias. El proyecto utiliza `numpy` y `tabulate`:
    ```bash
    pip install numpy tabulate
    ```
-3. Ejecuta el script principal:
+5. Ejecuta el script principal:
    ```bash
    python comparacion_tfidf_bm25.py
    ```
