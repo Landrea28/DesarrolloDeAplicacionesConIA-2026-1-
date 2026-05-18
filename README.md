@@ -15,13 +15,12 @@
 5. [Arquitectura](#5-arquitectura)
 6. [Requisitos previos](#6-requisitos-previos)
 7. [Guía de instalación y ejecución](#7-guía-de-instalación-y-ejecución)
-8. [Obtener la API Key de Groq](#8-obtener-la-api-key-de-groq)
-9. [Cómo funciona internamente](#9-cómo-funciona-internamente)
-10. [Resultados y métricas](#10-resultados-y-métricas)
-11. [Solución de Problemas](#11-solución-de-problemas)
-12. [Seguridad de credenciales](#12-seguridad-de-credenciales)
-13. [Checklist de soporte](#13-checklist-de-soporte)
-14. [Autoría](#14-autoría)
+8. [Cómo funciona internamente](#8-cómo-funciona-internamente)
+9. [Resultados y métricas](#9-resultados-y-métricas)
+10. [Solución de Problemas](#10-solución-de-problemas)
+11. [Seguridad de credenciales](#11-seguridad-de-credenciales)
+12. [Checklist de soporte](#12-checklist-de-soporte)
+13. [Autoría](#13-autoría)
 
 ---
 
@@ -210,21 +209,41 @@ pip install pandas datasets tabulate ragas langchain-groq langchain-huggingface 
 
 El proceso puede demorar entre 2 y 10 minutos, dependiendo de la velocidad de conexión. Al finalizar, se mostrará el mensaje de confirmación `Successfully installed ...`.
 
-### 7.5. Crear el archivo `.env`
+### 7.5. Crear el archivo .env
 
-En la raíz del proyecto, crea un archivo llamado exactamente **`.env`** (con el punto al inicio) y dentro escribe:
+En la raíz del proyecto, crea un archivo vacío llamado exactamente **.env** (con el punto al inicio).
+
+> **Advertencia:** Si Windows no te deja crear archivos que empiezan con `.`, créalo desde VS Code (`New File` → escribe `.env`) o desde terminal: `type nul > .env` (Windows) / `touch .env` (macOS/Linux).
+
+### 7.6. Obtener y configurar la API Key de Groq
+
+Para poder ejecutar el proyecto, es obligatorio configurar tu API Key de Groq en el archivo .env que acabas de crear. La API Key es la credencial que permite comunicarse con el modelo de IA (Llama 3.1 8B). **Es gratuita** y se obtiene en menos de un minuto.
+
+**Paso a paso:**
+1. Entra a [https://console.groq.com](https://console.groq.com) y regístrate o inicia sesión.
+2. Ve a la sección **"API Keys"** en el menú izquierdo (o visita [https://console.groq.com/keys](https://console.groq.com/keys)).
+3. Haz clic en **"Create API Key"**, asigna un nombre y confírmalo.
+4. **Copia la clave inmediatamente** (Groq solo la muestra una vez).
+5. Abre el archivo .env creado en el paso 7.5 y pega la clave con este formato:
 
 ```env
 GROQ_API_KEY="Your_api_key_here"
 ```
+*(Reemplaza "Your_api_key_here" por la clave real que copiaste)*
 
-Para obtener la clave de acceso, consulte la [sección 8](#8-obtener-la-api-key-de-groq).
+**Preguntas frecuentes sobre la API Key:**
 
-> **Advertencia:** Si Windows no te deja crear archivos que empiezan con `.`, créalo desde VS Code (`New File` → escribe `.env`) o desde terminal: `type nul > .env` (Windows) / `touch .env` (macOS/Linux).
+| Situación | Qué hacer |
+|---|---|
+| Perdí la clave | Vuelve a [console.groq.com/keys](https://console.groq.com/keys), borra la antigua y crea una nueva. Actualiza el .env. |
+| Me da error 401 AuthenticationError | La clave está mal copiada o fue revocada. Verifica que no tenga espacios al inicio/final y crea una nueva si es necesario. |
+| Me da error 429 RateLimitError | Llegaste al límite gratuito diario de tokens. Espera unas horas o al reset diario (medianoche UTC). |
+| ¿Es gratis? | Sí, la capa gratuita de Groq incluye 500,000 tokens/día con el modelo Llama 3.1 8B, **más que suficiente** para este proyecto. |
+| ¿La clave caduca? | No expira automáticamente, pero puedes revocarla cuando quieras desde la consola. |
 
-### 7.6. Ejecutar el proyecto
+### 7.7. Ejecutar el proyecto
 
-Con el entorno virtual activado y el `.env` configurado:
+Con el entorno virtual activado y el .env configurado:
 
 ```bash
 python -u evaluacion_ragas.py
@@ -255,65 +274,7 @@ Generando análisis crítico...
 
 ---
 
-## 8. Obtener la API Key de Groq
-
-La API Key es la credencial que permite al proyecto comunicarse con el modelo de IA (Llama 3.1 8B) alojado en Groq. **Es gratuita** y se obtiene en menos de un minuto.
-
-### Paso a paso
-
-**1. Crear una cuenta en Groq**
-
-- Entra a [https://console.groq.com](https://console.groq.com).
-- Haz clic en **"Sign up"** (Registrarse).
-- Puedes registrarte con:
-  - Cuenta de **Google**
-  - Cuenta de **GitHub**
-  - **Correo electrónico** + contraseña
-- Si te registras con correo, confirma el enlace que llegará a tu bandeja.
-
-**2. Entrar a la sección de API Keys**
-
-- Una vez dentro de la consola, ve al menú lateral izquierdo.
-- Haz clic en **"API Keys"**.
-- O entra directamente a: [https://console.groq.com/keys](https://console.groq.com/keys).
-
-**3. Crear una nueva API Key**
-
-- Haz clic en el botón **"Create API Key"**.
-- Se solicitará un **nombre descriptivo** para la clave (ejemplo: `proyecto-rag`, `evaluacion-ragas`) destinado a facilitar su identificación y administración en el panel.
-- Confirma haciendo clic en **"Submit"** o **"Create"**.
-
-**4. Copiar la clave inmediatamente**
-
-> **Importante:** Groq **solo te muestra la clave una vez**. Si cierras la ventana sin copiarla, ya no podrás verla y tendrás que crear otra nueva.
-
-- La clave tendrá un formato parecido a: `gsk_xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx`.
-- Cópiala completa con el botón de copiar.
-
-**5. Pegarla en el archivo `.env` del proyecto**
-
-- Abre el archivo `.env` (que ya creaste en la [sección 7.5](#75-crear-el-archivo-env)).
-- Escribe o pega la clave así (sin comillas, sin espacios alrededor del `=`):
-
-  ```env
-  GROQ_API_KEY="Your_api_key_here"
-  ```
-
-- Guarda el archivo (`Ctrl + S` en la mayoría de editores).
-
-### Preguntas frecuentes
-
-| Situación | Qué hacer |
-|---|---|
-| Perdí la clave | Vuelve a [console.groq.com/keys](https://console.groq.com/keys), borra la antigua y crea una nueva. Actualiza el `.env`. |
-| Me da error `401 AuthenticationError` | La clave está mal copiada o fue revocada. Verifica que no tenga espacios al inicio/final y crea una nueva si es necesario. |
-| Me da error `429 RateLimitError` | Llegaste al límite gratuito diario de tokens. Espera unas horas o al reset diario (medianoche UTC). |
-| ¿Es gratis? | Sí, la capa gratuita de Groq incluye 500,000 tokens/día con el modelo Llama 3.1 8B, **más que suficiente** para este proyecto. |
-| ¿La clave caduca? | No expira automáticamente, pero puedes revocarla cuando quieras desde la consola. |
-
----
-
-## 9. Cómo funciona internamente
+## 8. Cómo funciona internamente
 
 ### Vectorización y similitud
 
@@ -348,7 +309,7 @@ Esto reduce alucinaciones porque el LLM responde **desde el contexto**, no desde
 
 ---
 
-## 10. Resultados y métricas
+## 9. Resultados y métricas
 
 Al terminar, el script imprime una tabla en consola y guarda los resultados en **`resultados_evaluacion.md`**.
 
@@ -365,7 +326,7 @@ Al terminar, el script imprime una tabla en consola y guarda los resultados en *
 
 ---
 
-## 11. Solución de Problemas
+## 10. Solución de Problemas
 
 | Síntoma | Causa | Solución |
 |---|---|---|
@@ -383,7 +344,7 @@ Al terminar, el script imprime una tabla en consola y guarda los resultados en *
 
 ---
 
-## 12. Seguridad de credenciales
+## 11. Seguridad de credenciales
 
 - **Nunca** subas `.env` a Git.
 - **Nunca** pegues tus API Keys en chats, capturas o foros.
@@ -398,7 +359,7 @@ Al terminar, el script imprime una tabla en consola y guarda los resultados en *
 
 ---
 
-## 13. Checklist de soporte
+## 12. Checklist de soporte
 
 Si algo falla, revisa en orden:
 
@@ -413,11 +374,11 @@ Si algo falla, revisa en orden:
 [ ] 8. Hay conexión a internet
 ```
 
-Si todo pasa y aún hay error, copia el mensaje completo y revisa la [sección 11](#11-errores-comunes).
+Si todo pasa y aún hay error, copia el mensaje completo y revisa la [sección 10](#10-solución-de-problemas).
 
 ---
 
-## 14. Autoría
+## 13. Autoría
 
 | | |
 |---|---|
