@@ -1,5 +1,6 @@
 import os
 import sys
+from datetime import datetime
 import pandas as pd
 from tabulate import tabulate
 from datasets import Dataset
@@ -27,10 +28,11 @@ if not API_KEY:
 # Configuramos LLM y Embeddings para LangChain
 print("Inicializando modelos...")
 llm = ChatGroq(
-    model="llama-3.3-70b-versatile",
+    model="llama-3.1-8b-instant",  # 500k TPD en capa gratuita (vs 100k del 70B). Más cuota para RAGAS.
     groq_api_key=API_KEY,
     temperature=0.0,
     max_retries=5,
+    n=1,  # Groq solo permite n=1; evita errores de RAGAS
 )
 
 embeddings_local = HuggingFaceEmbeddings(
@@ -141,6 +143,71 @@ if question_col is None:
     print("[ERROR] No se encontró la columna de pregunta en los resultados de RAGAS.")
     sys.exit(1)
 
+# Identificar columnas de métricas presentes (acceso defensivo).
+metric_cols = [c for c in ['faithfulness', 'answer_relevancy', 'context_precision'] if c in results_df.columns]
+pretty_metric_cols = [c.replace('_', ' ').title() for c in metric_cols]
+
+
+def construir_reporte_md(df, incluye_analisis: bool) -> str:
+    """Construye el reporte en Markdown con resumen, tabla detallada y leyenda."""
+    fecha = datetime.now().strftime("%Y-%m-%d %H:%M")
+
+    # Promedios de cada métrica
+    promedios = {pretty: f"{df[orig].mean():.3f}"
+                 for orig, pretty in zip(metric_cols, pretty_metric_cols)}
+
+    md = []
+    md.append("# Resultados de Evaluación RAGAS\n")
+    md.append(f"_Generado el {fecha}_\n")
+    md.append("**Modelo:** Llama 3.1 8B (Groq) · **Embeddings:** all-MiniLM-L6-v2 (HuggingFace)\n")
+    md.append("---\n")
+
+    # --- Resumen ---
+    md.append("## 📊 Promedios generales\n")
+    header = "| " + " | ".join(promedios.keys()) + " |"
+    sep    = "|" + "|".join([":---:"] * len(promedios)) + "|"
+    valores = "| " + " | ".join(f"**{v}**" for v in promedios.values()) + " |"
+    md.extend([header, sep, valores, ""])
+    md.append("> Las métricas van de **0 a 1**. Más cercano a 1 = mejor desempeño.\n")
+    md.append("---\n")
+
+    # --- Tabla detallada ---
+    md.append("## 📋 Resultados por pregunta\n")
+    header_cols = ["#", "Pregunta"] + pretty_metric_cols
+    if incluye_analisis:
+        header_cols.append("Análisis Crítico")
+    md.append("| " + " | ".join(header_cols) + " |")
+    md.append("|:---:|---|" + "|".join([":---:"] * len(pretty_metric_cols)) + ("|---|" if incluye_analisis else "|"))
+
+    for i, row in df.iterrows():
+        pregunta = str(row[question_col]).replace("|", "\\|").replace("\n", " ")
+        valores_fila = [f"{row[orig]:.3f}" if pd.notna(row[orig]) else "N/A" for orig in metric_cols]
+        fila = [f"**Q{i+1}**", pregunta] + valores_fila
+        if incluye_analisis:
+            analisis = str(row.get('Análisis', '')).replace("|", "\\|").replace("\n", " ")
+            fila.append(analisis)
+        md.append("| " + " | ".join(fila) + " |")
+
+    md.append("")
+    md.append("---\n")
+
+    # --- Leyenda ---
+    md.append("## 📖 Leyenda de métricas\n")
+    md.append("| Métrica | Qué mide |")
+    md.append("|---|---|")
+    md.append("| **Faithfulness** | Fidelidad: la respuesta se basa estrictamente en el contexto. Cercano a 1 = sin alucinaciones. |")
+    md.append("| **Answer Relevancy** | Relevancia: la respuesta realmente contesta lo que se preguntó. |")
+    md.append("| **Context Precision** | Precisión del contexto: el retriever trajo los fragmentos correctos. |")
+
+    return "\n".join(md)
+
+
+# --- Guardado preliminar SIN análisis crítico ---
+# Esto preserva los resultados aunque la fase de análisis falle por rate limit.
+with open('resultados_evaluacion.md', 'w', encoding='utf-8') as f:
+    f.write(construir_reporte_md(results_df, incluye_analisis=False))
+print("[OK] Métricas guardadas en 'resultados_evaluacion.md' (preliminar).")
+
 # --- 7. Generación de Tabla y Análisis ---
 print("Generando análisis crítico...")
 
@@ -158,22 +225,28 @@ for index, row in results_df.iterrows():
     Escribe un análisis crítico muy breve (1 a 2 oraciones) explicando qué significan estos resultados para esta pregunta.
     """
 
-    res_analisis = llm.invoke(prompt_analisis)
-    analisis_list.append(res_analisis.content.strip().replace('\n', ' '))
+    try:
+        res_analisis = llm.invoke(prompt_analisis)
+        analisis_list.append(res_analisis.content.strip().replace('\n', ' '))
+    except Exception as e:
+        print(f"  [!] Q{index+1}: no se pudo generar análisis ({type(e).__name__}). Continuando con placeholder.")
+        analisis_list.append("(Análisis no disponible: rate limit o error de API.)")
 
 results_df['Análisis'] = analisis_list
 
-# Limpiar dataframe para la tabla final (acceso defensivo: RAGAS puede cambiar nombres de columna entre versiones)
-metric_cols = [c for c in ['faithfulness', 'answer_relevancy', 'context_precision'] if c in results_df.columns]
-final_df = results_df[[question_col] + metric_cols + ['Análisis']]
-final_df.columns = ['Pregunta'] + [c.replace('_', ' ').title() for c in metric_cols] + ['Análisis Crítico']
+# --- Tabla resumida para mostrar en consola ---
+consola_df = results_df[[question_col] + metric_cols + ['Análisis']].copy()
+consola_df.columns = ['Pregunta'] + pretty_metric_cols + ['Análisis Crítico']
+# Redondear métricas para visualización
+for col in pretty_metric_cols:
+    consola_df[col] = consola_df[col].apply(lambda v: f"{v:.3f}" if pd.notna(v) else "N/A")
 
 print("\n=== RESULTADOS DE EVALUACIÓN RAGAS ===")
-table_str = tabulate(final_df, headers='keys', tablefmt='grid', showindex=False)
+table_str = tabulate(consola_df, headers='keys', tablefmt='grid', showindex=False, maxcolwidths=[40, 12, 12, 12, 60])
 print(table_str)
 
+# --- Guardado final con análisis crítico incluido ---
 with open('resultados_evaluacion.md', 'w', encoding='utf-8') as f:
-    f.write("# Resultados de Evaluación RAGAS\n\n")
-    f.write(final_df.to_markdown(index=False))
+    f.write(construir_reporte_md(results_df, incluye_analisis=True))
 
 print("\n[OK] Script completado. Los resultados también se guardaron en 'resultados_evaluacion.md'")
