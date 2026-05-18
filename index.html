@@ -1,0 +1,321 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Documentación del Proyecto: TF-IDF vs BM25</title>
+    <style>
+        /* Variables y tipografía básica */
+        :root {
+            --text-color: #24292e;
+            --heading-color: #111;
+            --bg-color: #ffffff;
+            --border-color: #eaecef;
+            --code-bg: #f6f8fa;
+            --accent-color: #0366d6;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+            line-height: 1.6;
+            color: var(--text-color);
+            background-color: var(--bg-color);
+            max-width: 850px;
+            margin: 0 auto;
+            padding: 40px 20px;
+        }
+
+        /* Estilos de encabezados */
+        h1, h2, h3, h4 {
+            color: var(--heading-color);
+            font-weight: 600;
+            margin-top: 1.5em;
+            margin-bottom: 0.5em;
+        }
+
+        h1 { font-size: 2.2em; border-bottom: 1px solid var(--border-color); padding-bottom: 0.3em; }
+        h2 { font-size: 1.6em; border-bottom: 1px solid var(--border-color); padding-bottom: 0.3em; }
+        h3 { font-size: 1.3em; }
+
+        /* Enlaces */
+        a {
+            color: var(--accent-color);
+            text-decoration: none;
+        }
+        a:hover {
+            text-decoration: underline;
+        }
+
+        /* Bloques de código y tablas */
+        pre {
+            background-color: var(--code-bg);
+            padding: 16px;
+            border-radius: 6px;
+            overflow-x: auto;
+            font-family: ui-monospace, SFMono-Regular, SF Mono, Menlo, Consolas, Liberation Mono, monospace;
+            font-size: 0.9em;
+            border: 1px solid var(--border-color);
+        }
+        
+        code {
+            font-family: ui-monospace, SFMono-Regular, SF Mono, Menlo, Consolas, Liberation Mono, monospace;
+            background-color: rgba(27,31,35,0.05);
+            padding: 0.2em 0.4em;
+            border-radius: 3px;
+            font-size: 0.9em;
+        }
+
+        /* Imágenes y Figuras */
+        figure {
+            margin: 2em 0;
+            text-align: center;
+        }
+        figure img {
+            max-width: 100%;
+            height: auto;
+            border: 1px solid var(--border-color);
+            border-radius: 4px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+        }
+        figcaption {
+            margin-top: 10px;
+            font-size: 1em;
+            color: var(--text-color);
+            font-style: normal;
+            font-weight: normal;
+        }
+
+        /* Listas */
+        ul, ol {
+            padding-left: 2em;
+            margin-bottom: 1em;
+        }
+
+        /* Estructura de la portada */
+        .cover {
+            padding-top: 25vh;
+            min-height: 70vh;
+            margin-bottom: 40px;
+            font-family: "Times New Roman", Times, serif;
+        }
+        .cover h1 {
+            text-align: center;
+            border: none;
+            font-size: 2em;
+            margin-bottom: 150px;
+            color: black;
+            font-weight: bold;
+        }
+        .cover .metadata {
+            text-align: left;
+            margin-left: 10%;
+            font-size: 1.1em;
+            color: black;
+        }
+        .cover .metadata p {
+            margin: 20px 0;
+        }
+        .cover .description {
+            display: none;
+        }
+
+        /* Tabla de contenido automática (estilos básicos) */
+        .toc {
+            background: #f8f9fa;
+            padding: 20px;
+            border-radius: 6px;
+            border: 1px solid var(--border-color);
+            margin-bottom: 40px;
+        }
+        .toc h2 {
+            border: none;
+            margin-top: 0;
+            font-size: 1.4em;
+        }
+        .toc ul {
+            list-style-type: none;
+            padding-left: 0;
+        }
+        .toc ul ul {
+            padding-left: 20px;
+        }
+
+        /* Configuración para impresión y exportación a PDF */
+        @media print {
+            body {
+                background: white;
+                color: black;
+                font-size: 11pt;
+                max-width: 100%;
+                margin: 0;
+                padding: 0;
+            }
+            .cover {
+                padding-top: 35vh;
+                height: 100vh;
+                box-sizing: border-box;
+                page-break-after: always;
+            }
+            h1, h2, h3 {
+                page-break-after: avoid; /* Evitar saltos justo después de un título */
+            }
+            p, ul, ol, table, pre, figure {
+                page-break-inside: avoid; /* Evitar que un párrafo o tabla se corte a la mitad si es posible */
+            }
+            .toc {
+                border: none;
+                background: none;
+                margin-bottom: 20px;
+            }
+            a {
+                text-decoration: none;
+                color: black;
+            }
+            
+            /* Clases utilitarias para forzar saltos de página precisos según agrupación */
+            .page-break {
+                page-break-before: always;
+            }
+        }
+    </style>
+</head>
+<body>
+
+    <!-- Portada -->
+    <div class="cover">
+        <h1>Proyecto: Comparación de Modelos TF-IDF y BM25</h1>
+        <div class="metadata">
+            <p>Lina Andrea Bello Ballén</p>
+            <p>Facultad de Ingeniería y Matemáticas</p>
+            <p>Ingeniería de Sistemas</p>
+            <p>Bogotá, Colombia</p>
+            <p id="fecha-actual">17 de mayo de 2026</p>
+        </div>
+    </div>
+
+    <!-- Tabla de contenido -->
+    <div class="toc">
+        <h2>Tabla de contenido</h2>
+        <ul>
+            <li><a href="#introduccion">1. Introducción</a></li>
+            <li><a href="#problema">2. Planteamiento del problema</a></li>
+            <li><a href="#glosario">3. Glosario técnico</a></li>
+            <li><a href="#tecnologias">4. Tecnologías, herramientas y arquitectura</a></li>
+            <li><a href="#marco-teorico">5. Marco teórico</a></li>
+            <li><a href="#metodologia">6. Metodología de evaluación</a></li>
+            <li><a href="#implementacion">7. Implementación</a></li>
+            <li><a href="#migracion">8. Migración y ajustes realizados</a></li>
+            <li><a href="#evidencias">9. Evidencias</a>
+                <ul>
+                    <li><a href="#retroalimentacion">9.1. Mi retroalimentacion</a></li>
+                </ul>
+            </li>
+            <li><a href="#limitaciones">10. Limitaciones</a></li>
+            <li><a href="#conclusiones">11. Conclusiones</a></li>
+        </ul>
+    </div>
+
+    <!-- SIN SALTO DE PÁGINA: TOC, Introducción y Problema van juntos -->
+    <h2 id="introduccion">1. Introducción</h2>
+    <p>Repo de GitHub: <a href="https://github.com/Landrea28/DesarrolloDeAplicacionesConIA-2026-1-/tree/Tf_Idf_BM25">https://github.com/Landrea28/DesarrolloDeAplicacionesConIA-2026-1-/tree/Tf_Idf_BM25</a></p>
+    <p>Este proyecto analiza y compara los algoritmos TF-IDF y BM25, evaluando su comportamiento ante distintos escenarios de búsqueda con documentos controlados, con el fin de entender el impacto del <em>keyword stuffing</em> y la longitud del texto en la relevancia real de los resultados.</p>
+
+    <h2 id="problema">2. Planteamiento del problema</h2>
+    <p>Contar la frecuencia de palabras no basta para medir la relevancia de un texto. El <em>keyword stuffing</em> (repetir palabras artificialmente) y los documentos excesivamente largos pueden alterar los rankings, desplazando textos cortos y precisos. Se requieren métricas más inteligentes que equilibren la frecuencia con el contexto y el tamaño del documento.</p>
+
+    <!-- SALTO DE PÁGINA: Agrupamos Glosario, Tecnologías y Marco Teórico -->
+    <h2 id="glosario" class="page-break">3. Glosario técnico</h2>
+    <ul>
+        <li><strong>Recuperación de Información (IR):</strong> Es el proceso de encontrar material (usualmente documentos no estructurados) que satisfaga una necesidad de información dentro de grandes colecciones.</li>
+        <li><strong>Corpus:</strong> El conjunto o colección de documentos sobre los cuales se realizan las búsquedas.</li>
+        <li><strong>Tokenización:</strong> El proceso de dividir un texto completo en unidades más pequeñas, como palabras individuales, llamadas tokens.</li>
+        <li><strong>Ranking:</strong> El orden en el que se presentan los documentos al usuario, organizado del más relevante al menos relevante según el algoritmo.</li>
+        <li><strong>Relevancia:</strong> Qué tan útil o pertinente es un documento devuelto en relación con la consulta real del usuario.</li>
+        <li><strong>TF-IDF (Term Frequency - Inverse Document Frequency):</strong> Algoritmo que evalúa la importancia de una palabra en un documento basándose en cuántas veces aparece ahí, penalizándola si es una palabra demasiado común en todos los demás documentos.</li>
+        <li><strong>IDF (Frecuencia Inversa de Documento):</strong> Un componente matemático que da más peso a palabras raras o específicas y reduce el peso de palabras muy comunes (como "el", "de", "para").</li>
+        <li><strong>BM25 (Best Matching 25):</strong> Evolución de TF-IDF. Incorpora límites matemáticos para que la repetición de palabras no sume puntos infinitamente y penaliza los documentos que son innecesariamente largos.</li>
+        <li><strong>Keyword stuffing:</strong> Práctica de manipular los resultados de búsqueda repitiendo excesivamente la misma palabra clave dentro de un texto.</li>
+    </ul>
+
+    <h2 id="tecnologias">4. Tecnologías, herramientas y arquitectura</h2>
+    <p>El proyecto se desarrolló utilizando <strong>Python</strong> en un entorno virtual aislado. A nivel de arquitectura, los textos de prueba se encuentran definidos directamente en el archivo <code>comapracion_tfidf_bm25.py</code> dentro de una lista llamada <code>docs=[...]</code>. El sistema carga estos documentos en memoria, los tokeniza, calcula previamente el IDF global y luego evalúa cada consulta sobre cada documento usando las fórmulas de TF-IDF y BM25, generando finalmente un ranking comparativo.</p>
+
+    <h2 id="marco-teorico">5. Marco teórico</h2>
+    <p><strong>TF-IDF</strong> multiplica la frecuencia del término por su rareza en la colección. Su mayor problema es que premia de forma ilimitada la repetición de palabras. En contraste, <strong>BM25</strong> introduce dos ajustes clave: la <em>saturación de términos</em> (poner un límite matemático al valor de las repeticiones) y la <em>penalización por longitud</em> (castigar documentos excesivamente largos), logrando estimar la relevancia de manera mucho más justa.</p>
+
+    <!-- SALTO DE PÁGINA: Agrupamos Metodología, Implementación y Migración -->
+    <h2 id="metodologia" class="page-break">6. Metodología de evaluación</h2>
+    <p>Para lograr una evaluación justa, los documentos del corpus fueron creados manualmente con fines experimentales, permitiendo observar el comportamiento de TF-IDF y BM25 bajo escenarios controlados de coherencia, longitud y exceso de palabras clave.</p>
+
+    <h2 id="implementacion">7. Implementación</h2>
+    <p>A nivel de código, el sistema separa la preparación de datos del cálculo matemático. Una vez los textos son tokenizados, se aplican las respectivas funciones matemáticas (con parámetros configurables para BM25 como <code>k1</code> y <code>b</code>) y se utiliza una lógica de ordenamiento nativa para construir los rankings finales.</p>
+
+    <h2 id="migracion">8. Migración y ajustes realizados</h2>
+    <p>Se implementó normalización de texto para evitar errores por signos de puntuación y se agregaron documentos de "ruido" adicionales para estabilizar el cálculo del IDF, evitando así divisiones por cero o anomalías en un corpus pequeño.</p>
+
+    <!-- SALTO DE PÁGINA: Evidencias -->
+    <h2 id="evidencias" class="page-break">9. Evidencias</h2>
+
+    <figure>
+        <img src="IMAGENES/consulta.png" alt="Ejecución y resultados obtenidos">
+        <figcaption>Resultados y rankings obtenidos tras la ejecución del sistema.</figcaption>
+    </figure>
+
+    <h3 id="retroalimentacion">9.1. Mi retroalimentacion</h3>
+    <p>Mi retroalimentacion: En los documentos del proyecto se plantearon distintos escenarios para analizar el comportamiento de los algoritmos TF-IDF y BM25 frente a consultas específicas. Cada documento fue diseñado con una intención diferente para evaluar cómo reaccionan ambos métodos ante casos como keyword stuffing, relevancia temática y longitud del contenido.</p>
+
+    <p>El <strong>Documento A</strong> es un texto normal que habla sobre inteligencia artificial de manera coherente y contextualizada. Aunque utiliza la palabra “inteligencia”, el término aparece de forma natural dentro del contenido.</p>
+
+    <p>El <strong>Documento B</strong> fue creado como un caso de <em>spam</em> o <em>keyword stuffing</em>. Básicamente repite muchas veces la palabra “inteligencia” sin desarrollar realmente un tema relacionado. El objetivo es demostrar cómo un documento puede aparentar relevancia únicamente por repetir constantemente la palabra clave.</p>
+
+    <p>El <strong>Documento C</strong> es un documento corto cuyo tema principal son los algoritmos. Aunque el texto es breve, está completamente enfocado en ese concepto.</p>
+
+    <p>El <strong>Documento D</strong> es un texto mucho más largo, aproximadamente de 90 palabras, relacionado principalmente con matemáticas. Sin embargo, menciona “algoritmo” una sola vez y utiliza términos relacionados con conteo y medición. Este documento se incluyó para evaluar si el modelo reconoce cierta relación semántica parcial, aun cuando el tema principal no son los algoritmos.</p>
+
+    <p>Finalmente, el <strong>Documento Extra</strong> habla sobre cocina italiana y clima ecuatorial, sin relación con inteligencia artificial, matemáticas o algoritmos. Este documento sirve como referencia irrelevante para estabilizar el cálculo del IDF y comprobar que los algoritmos no asignen relevancia a textos completamente fuera del contexto de búsqueda.</p>
+
+    <p>En la primera tabla, correspondiente a la consulta <strong>“inteligencia”</strong>, se puede observar un comportamiento importante. El Documento A, que realmente desarrolla el tema de inteligencia artificial de forma coherente, obtiene un score TF-IDF cercano a <strong>0.12</strong> y un score BM25 cercano a <strong>0.28</strong>.</p>
+
+    <p>Por otro lado, el Documento B obtiene valores mucho más altos: aproximadamente <strong>0.44</strong> en TF-IDF y <strong>0.76</strong> en BM25. A simple vista podría parecer el documento más relevante, pero en realidad esto ocurre porque repite excesivamente la palabra “inteligencia”. Es decir, ambos algoritmos están otorgando prioridad a la frecuencia del término dentro del documento.</p>
+
+    <p>Aquí se evidencia el problema del <em>keyword stuffing</em>: un texto puede recibir una puntuación alta no por ser útil o informativo, sino simplemente por repetir demasiadas veces la palabra consultada.</p>
+
+    <p>Sin embargo, BM25 y TF-IDF no funcionan exactamente igual. Aunque ambos favorecen al Documento B, BM25 intenta controlar parcialmente este problema mediante una saturación de frecuencia. Esto significa que repetir una palabra muchas veces deja de aumentar el score de forma proporcional después de cierto punto. TF-IDF, en cambio, es más sensible a la repetición directa del término, por lo que puede verse más afectado por documentos spam.</p>
+
+    <p>En la segunda tabla, correspondiente a la consulta <strong>“algoritmo”</strong>, el comportamiento cambia considerablemente.</p>
+
+    <p>Los Documentos A y B obtienen puntuaciones cercanas a cero porque no están relacionados con algoritmos. En cambio, el Documento C obtiene el mayor score tanto en TF-IDF como en BM25, ya que es el único cuyo tema principal son los algoritmos.</p>
+
+    <p>El Documento D también obtiene cierta relevancia, pero menor. Esto ocurre porque menciona el término “algoritmo” y además contiene vocabulario relacionado con matemáticas y procesos de cálculo. Aun así, el tema principal del documento no son los algoritmos, por lo que ambos modelos le asignan una puntuación inferior frente al Documento C.</p>
+
+    <p>Aquí es donde BM25 muestra una diferencia importante respecto a TF-IDF.</p>
+
+    <p>TF-IDF se basa principalmente en:</p>
+    <ul>
+        <li>frecuencia del término,</li>
+        <li>frecuencia inversa en los documentos,</li>
+        <li>y peso estadístico de la palabra.</li>
+    </ul>
+
+    <p>Pero BM25 añade además una penalización por longitud del documento. Esto significa que un documento demasiado largo no obtiene automáticamente mayor relevancia solo por contener la palabra buscada.</p>
+
+    <p>Por esa razón, el Documento C —aunque es más corto— obtiene mejor puntuación que el Documento D. BM25 interpreta que el Documento C es más específico y directo respecto al tema “algoritmo”, mientras que el Documento D diluye el término dentro de mucho más contenido.</p>
+
+    <p>En otras palabras, BM25 favorece documentos más concretos y especializados, mientras que TF-IDF puede verse más influenciado por la frecuencia bruta de palabras.</p>
+
+    <p>En conclusión, las pruebas muestran que ambos métodos pueden detectar relevancia léxica, pero también evidencian limitaciones importantes. TF-IDF tiende a ser más vulnerable al <em>keyword stuffing</em>, mientras que BM25 mejora parcialmente este problema gracias a la normalización por longitud y la saturación de frecuencia. Aun así, ninguno de los dos comprende realmente el significado del texto; ambos trabajan principalmente con estadísticas de aparición de palabras.</p>
+
+    <!-- SALTO DE PÁGINA: Limitaciones y Conclusiones -->
+    <h2 id="limitaciones" class="page-break">10. Limitaciones</h2>
+    <p>El corpus utilizado es pequeño y artificial. Adicionalmente, al basarse en coincidencia léxica exacta (conteo de palabras), ninguno de los modelos comprende el significado del texto ni reconoce sinónimos, evidenciando la ausencia de un análisis semántico profundo.</p>
+
+    <h2 id="conclusiones">11. Conclusiones</h2>
+    <p>BM25 demostró ser más robusto al implementar la saturación de términos y penalización por longitud, mitigando los engaños del <em>keyword stuffing</em> y valorando documentos más cortos y precisos. Sin embargo, ambos modelos siguen dependiendo de frecuencias estadísticas, lo que subraya la necesidad de complementarlos con modelos semánticos para lograr una recuperación de información verdaderamente contextual.</p>
+
+    <script>
+        const dateElement = document.getElementById('fecha-actual');
+        const options = { year: 'numeric', month: 'long', day: 'numeric' };
+        dateElement.textContent = new Date().toLocaleDateString('es-ES', options);
+    </script>
+</body>
+</html>
